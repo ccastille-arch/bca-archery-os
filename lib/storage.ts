@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -7,6 +7,9 @@ const KEYS = {
   SESSIONS: '@bca_sessions',
   BOWS: '@bca_bows',
   ARROWS: '@bca_arrows',
+  STAB_TESTS: '@bca_stab_tests',
+  TUNE_LOGS: '@bca_tune_logs',
+  TOURNAMENTS: '@bca_tournaments',
 };
 
 // Generic helpers
@@ -59,3 +62,18 @@ export const deleteBowConfig = (id: string) => deleteOne<BowConfig>(KEYS.BOWS, i
 export const getArrowConfigs = (): Promise<ArrowConfig[]> => getAll<ArrowConfig>(KEYS.ARROWS);
 export const saveArrowConfig = (a: ArrowConfig) => saveOne(KEYS.ARROWS, a, getArrowConfigs);
 export const deleteArrowConfig = (id: string) => deleteOne<ArrowConfig>(KEYS.ARROWS, id, getArrowConfigs);
+
+// Stabilizer Tests
+export const getStabilizerTests = (): Promise<StabilizerTest[]> => getAll<StabilizerTest>(KEYS.STAB_TESTS);
+export const saveStabilizerTest = (t: StabilizerTest) => saveOne(KEYS.STAB_TESTS, t, getStabilizerTests);
+export const deleteStabilizerTest = (id: string) => deleteOne<StabilizerTest>(KEYS.STAB_TESTS, id, getStabilizerTests);
+
+// Tune Logs
+export const getTuneLogs = (): Promise<TuneLog[]> => getAll<TuneLog>(KEYS.TUNE_LOGS);
+export const saveTuneLog = (t: TuneLog) => saveOne(KEYS.TUNE_LOGS, t, getTuneLogs);
+export const deleteTuneLog = (id: string) => deleteOne<TuneLog>(KEYS.TUNE_LOGS, id, getTuneLogs);
+
+// Tournaments
+export const getTournaments = (): Promise<Tournament[]> => getAll<Tournament>(KEYS.TOURNAMENTS);
+export const saveTournament = (t: Tournament) => saveOne(KEYS.TOURNAMENTS, t, getTournaments);
+export const deleteTournament = (id: string) => deleteOne<Tournament>(KEYS.TOURNAMENTS, id, getTournaments);

@@ -25,56 +25,26 @@ export default function RootLayout() {
           tabBarLabelStyle: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
         }}
       >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Home',
-            headerTitle: 'BCA ARCHERY OS',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="grid" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="shots"
-          options={{
-            title: 'Shots',
-            headerTitle: 'SHOT LOG',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="locate" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="gear"
-          options={{
-            title: 'Gear',
-            headerTitle: 'GEAR',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="fitness" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="sights"
-          options={{
-            title: 'Sights',
-            headerTitle: 'SIGHT BUILDER',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="build" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="sessions"
-          options={{
-            title: 'Sessions',
-            headerTitle: 'SESSIONS',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="timer" size={size} color={color} />
-            ),
-          }}
-        />
+        <Tabs.Screen name="index" options={{
+          title: 'Home', headerTitle: 'BCA ARCHERY OS',
+          tabBarIcon: ({ color, size }) => <Ionicons name="grid" size={size} color={color} />,
+        }} />
+        <Tabs.Screen name="shots" options={{
+          title: 'Shots', headerTitle: 'SHOT LOG',
+          tabBarIcon: ({ color, size }) => <Ionicons name="locate" size={size} color={color} />,
+        }} />
+        <Tabs.Screen name="gear" options={{
+          title: 'Gear', headerTitle: 'GEAR',
+          tabBarIcon: ({ color, size }) => <Ionicons name="fitness" size={size} color={color} />,
+        }} />
+        <Tabs.Screen name="sights" options={{
+          title: 'Sights', headerTitle: 'SIGHT BUILDER',
+          tabBarIcon: ({ color, size }) => <Ionicons name="build" size={size} color={color} />,
+        }} />
+        <Tabs.Screen name="sessions" options={{
+          title: 'Sessions', headerTitle: 'SESSIONS',
+          tabBarIcon: ({ color, size }) => <Ionicons name="timer" size={size} color={color} />,
+        }} />
         {/* Hidden detail screens */}
         <Tabs.Screen name="shot-detail" options={{ href: null }} />
         <Tabs.Screen name="analytics" options={{ href: null }} />
@@ -82,6 +52,10 @@ export default function RootLayout() {
         <Tabs.Screen name="sight-detail" options={{ href: null }} />
         <Tabs.Screen name="bow-detail" options={{ href: null }} />
         <Tabs.Screen name="arrow-detail" options={{ href: null }} />
+        <Tabs.Screen name="stabilizer-test" options={{ href: null }} />
+        <Tabs.Screen name="tune-detail" options={{ href: null }} />
+        <Tabs.Screen name="tournaments" options={{ href: null }} />
+        <Tabs.Screen name="tournament-detail" options={{ href: null }} />
       </Tabs>
     </>
   );

@@ -4,25 +4,27 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
-import { getShots, getSessions, getBowConfigs, getArrowConfigs } from '../lib/storage';
+import { getShots, getSessions, getBowConfigs, getArrowConfigs, getTournaments } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
 import GradientCard from '../components/GradientCard';
-import type { ShotEnd, Session } from '../lib/types';
+import type { ShotEnd, Session, Tournament } from '../lib/types';
 
 export default function Dashboard() {
   const router = useRouter();
   const [shots, setShots] = useState<ShotEnd[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [gearCount, setGearCount] = useState(0);
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
-    const [s, sess, bows, arrows] = await Promise.all([
-      getShots(), getSessions(), getBowConfigs(), getArrowConfigs(),
+    const [s, sess, bows, arrows, tourn] = await Promise.all([
+      getShots(), getSessions(), getBowConfigs(), getArrowConfigs(), getTournaments(),
     ]);
     setShots(s);
     setSessions(sess);
     setGearCount(bows.length + arrows.length);
+    setTournaments(tourn);
   }, []);
 
   useFocusEffect(useCallback(() => { loadData(); }, [loadData]));
@@ -186,6 +188,34 @@ export default function Dashboard() {
             >
               <Ionicons name="bar-chart" size={32} color={colors.secondary} />
               <Text style={[styles.actionText, { color: colors.secondary }]}>Analytics</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/tournaments')}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={['#FFB80020', '#FFB80005'] as [string, string]}
+              style={styles.actionGradient}
+            >
+              <Ionicons name="trophy" size={32} color="#FFB800" />
+              <Text style={[styles.actionText, { color: '#FFB800' }]}>
+                Tournaments {tournaments.length > 0 ? `(${tournaments.length})` : ''}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/stabilizer-test')}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={['#FF8C0020', '#FF8C0005'] as [string, string]}
+              style={styles.actionGradient}
+            >
+              <Ionicons name="flask" size={32} color="#FF8C00" />
+              <Text style={[styles.actionText, { color: '#FF8C00' }]}>Stab Lab</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
