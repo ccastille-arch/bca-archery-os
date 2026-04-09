@@ -132,6 +132,28 @@ export default function Dashboard() {
         </AnimatedEntry>
       )}
 
+      {/* Live Scorer Hero Button */}
+      <AnimatedEntry delay={170}>
+        <TouchableOpacity style={styles.targetMapBtn} onPress={() => router.push('/rounds')} activeOpacity={0.8}>
+          <LinearGradient
+            colors={['#1A0A0A', '#0A0A1A', '#0A1A0A'] as [string, string, string]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+            style={styles.targetMapGradient}
+          >
+            <View style={styles.targetMapLeft}>
+              <View style={[styles.targetMapIconWrap, { backgroundColor: '#00AA0025' }]}>
+                <Ionicons name="trophy" size={32} color="#00AA00" />
+              </View>
+              <View>
+                <Text style={[styles.targetMapTitle, { color: '#00AA00' }]}>LIVE SCORER</Text>
+                <Text style={styles.targetMapSub}>ASA / IBO round scoring with your group</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#00AA00" />
+          </LinearGradient>
+        </TouchableOpacity>
+      </AnimatedEntry>
+
       {/* Target Map Hero Button */}
       <AnimatedEntry delay={180}>
         <TouchableOpacity style={styles.targetMapBtn} onPress={() => router.push('/target-map')} activeOpacity={0.8}>

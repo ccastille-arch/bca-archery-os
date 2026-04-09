@@ -246,6 +246,55 @@ export interface TuneLog {
   notes: string;
 }
 
+// ==================== LIVE ROUND SCORER (Foam Hunter style) ====================
+
+export type RoundMode = 'competition' | 'practice' | 'fun';
+export type ScorerFormat = 'asa' | 'ibo' | 'other';
+
+export const ASA_CLASSES = [
+  'Open Pro', 'Semi-Pro', 'Known Pro', 'Known 45', 'Known 50',
+  'Open A', 'Open B', 'Open C', 'Hunter', 'Novice',
+  'Eagle Pins', 'Youth Eagle', 'Senior Eagle', 'Silver Senior',
+  'Women Open', 'Women Hunter', 'Young Adult', 'Youth',
+] as const;
+
+export const IBO_CLASSES = [
+  'Pro', 'Semi-Pro', 'MBO', 'MBR', 'HBO', 'HBR',
+  'FBO', 'FBR', 'Senior MBO', 'Senior HBO', 'Youth',
+  'Cub', 'Hunter', 'Crossbow',
+] as const;
+
+export interface Shooter {
+  id: string;
+  name: string;
+  shooterNumber: string;
+  bowClass: string;
+}
+
+export interface TargetScore {
+  targetNum: number;
+  scores: Record<string, number>;  // shooterId → score value
+}
+
+export interface LiveRound {
+  id: string;
+  date: string;
+  mode: RoundMode;
+  format: ScorerFormat;
+  name: string;                    // tournament/event name
+  rangeAssignment: string;
+  totalTargets: number;
+  startingTarget: number;
+  shooters: Shooter[];
+  targets: TargetScore[];
+  completed: boolean;
+  bowConfigId?: string;
+  arrowConfigId?: string;
+}
+
+export const ASA_SCORE_VALUES = [14, 12, 10, 8, 5, 0];
+export const IBO_SCORE_VALUES = [11, 10, 8, 5, 0];
+
 // ==================== TOURNAMENTS ====================
 
 export interface Tournament {

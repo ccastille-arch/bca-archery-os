@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -10,6 +10,7 @@ const KEYS = {
   STAB_TESTS: '@bca_stab_tests',
   TUNE_LOGS: '@bca_tune_logs',
   TOURNAMENTS: '@bca_tournaments',
+  LIVE_ROUNDS: '@bca_live_rounds',
   PRACTICES: '@bca_practices',
   EXPENSES: '@bca_expenses',
   FORUM_POSTS: '@bca_forum_posts',
@@ -82,6 +83,11 @@ export const deleteTuneLog = (id: string) => deleteOne<TuneLog>(KEYS.TUNE_LOGS, 
 export const getTournaments = (): Promise<Tournament[]> => getAll<Tournament>(KEYS.TOURNAMENTS);
 export const saveTournament = (t: Tournament) => saveOne(KEYS.TOURNAMENTS, t, getTournaments);
 export const deleteTournament = (id: string) => deleteOne<Tournament>(KEYS.TOURNAMENTS, id, getTournaments);
+
+// Live Rounds
+export const getLiveRounds = (): Promise<LiveRound[]> => getAll<LiveRound>(KEYS.LIVE_ROUNDS);
+export const saveLiveRound = (r: LiveRound) => saveOne(KEYS.LIVE_ROUNDS, r, getLiveRounds);
+export const deleteLiveRound = (id: string) => deleteOne<LiveRound>(KEYS.LIVE_ROUNDS, id, getLiveRounds);
 
 // Practice Logs
 export const getPracticeLogs = (): Promise<PracticeLog[]> => getAll<PracticeLog>(KEYS.PRACTICES);

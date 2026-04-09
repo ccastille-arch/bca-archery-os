@@ -71,6 +71,9 @@ export default function RootLayout() {
         <Tabs.Screen name="ballistics" options={{ href: null }} />
         <Tabs.Screen name="practice-detail" options={{ href: null }} />
         <Tabs.Screen name="expense-detail" options={{ href: null }} />
+        <Tabs.Screen name="rounds" options={{ href: null }} />
+        <Tabs.Screen name="score-round" options={{ href: null }} />
+        <Tabs.Screen name="score-live" options={{ href: null }} />
       </Tabs>
     </>
   );
