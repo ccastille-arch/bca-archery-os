@@ -65,6 +65,8 @@ export default function RootLayout() {
         <Tabs.Screen name="expert-profile" options={{ href: null }} />
         <Tabs.Screen name="expert-dashboard" options={{ href: null }} />
         <Tabs.Screen name="booking" options={{ href: null }} />
+        <Tabs.Screen name="target-map" options={{ href: null }} />
+        <Tabs.Screen name="ballistics" options={{ href: null }} />
       </Tabs>
     </>
   );

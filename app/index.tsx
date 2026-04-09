@@ -132,6 +132,28 @@ export default function Dashboard() {
         </AnimatedEntry>
       )}
 
+      {/* Target Map Hero Button */}
+      <AnimatedEntry delay={180}>
+        <TouchableOpacity style={styles.targetMapBtn} onPress={() => router.push('/target-map')} activeOpacity={0.8}>
+          <LinearGradient
+            colors={['#1A0A0A', '#0A1A0F', '#0A0A1A'] as [string, string, string]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+            style={styles.targetMapGradient}
+          >
+            <View style={styles.targetMapLeft}>
+              <View style={styles.targetMapIconWrap}>
+                <Ionicons name="aperture" size={32} color={colors.primary} />
+              </View>
+              <View>
+                <Text style={styles.targetMapTitle}>TARGET MAP</Text>
+                <Text style={styles.targetMapSub}>Tap arrows on target + AI group analysis</Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.primary} />
+          </LinearGradient>
+        </TouchableOpacity>
+      </AnimatedEntry>
+
       {/* Quick Actions */}
       <AnimatedEntry delay={200}>
         <Text style={styles.sectionTitle}>QUICK ACTIONS</Text>
@@ -400,6 +422,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     marginTop: spacing.md,
   },
+  targetMapBtn: { borderRadius: borderRadius.md, overflow: 'hidden', borderWidth: 1, borderColor: colors.primary + '40', marginBottom: spacing.md },
+  targetMapGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md },
+  targetMapLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },
+  targetMapIconWrap: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' },
+  targetMapTitle: { fontSize: fontSize.md, fontWeight: '900', color: colors.primary, letterSpacing: 2 },
+  targetMapSub: { fontSize: fontSize.xs, color: colors.textSecondary, marginTop: 2 },
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
