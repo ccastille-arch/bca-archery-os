@@ -110,34 +110,104 @@ export default function TargetFace({ impacts, onTap, size = 300, targetType = 's
       );
     }
 
-    // ===== ASA 3D RINGS =====
+    // ===== ASA 3D RINGS (correct format) =====
     if (targetType === 'asa-3d') {
-      // ASA scoring rings on a 3D target: outer (5), middle (8), inner (10), vital (12), super-vital (14)
-      const bgSize = size * 0.85;
+      // ASA scoring: 5 (body), 8 (large outer ring), 10 (inner ring),
+      // inside the 10: upper 12, center 10, lower 12 (3 small circles)
+      // 14 ring: small circle off to the side of the 8 ring
+      const cx = size * 0.48;  // slightly left of center (14 is on right)
+      const cy = size * 0.48;
+      const bodyW = size * 0.82;
+      const bodyH = size * 0.6;
+
+      // Ring sizes
+      const ring8W = size * 0.48;
+      const ring8H = size * 0.38;
+      const ring10W = size * 0.30;
+      const ring10H = size * 0.24;
+
+      // Inner 3 circles (upper 12, center 10, lower 12)
+      const innerR = size * 0.055;
+
+      // 14 ring (off to the right side)
+      const ring14R = size * 0.035;
+
       return (
         <>
-          {/* Body background */}
-          <View style={{ position: 'absolute', top: (size - bgSize) / 2, left: (size - bgSize) / 2, width: bgSize, height: bgSize * 0.65, borderRadius: bgSize * 0.15, backgroundColor: '#6B4226' }} />
-          {/* Scoring rings */}
-          {[
-            { s: size * 0.55, c: '#888888', label: '5' },   // outer
-            { s: size * 0.40, c: '#333333', label: '8' },   // middle
-            { s: size * 0.28, c: '#00A3FF', label: '10' },  // inner
-            { s: size * 0.16, c: '#FF4444', label: '12' },  // vital
-            { s: size * 0.08, c: '#FFD700', label: '14' },  // super vital
-          ].map((ring, i) => (
-            <View key={i} style={{
-              position: 'absolute',
-              width: ring.s, height: ring.s * 0.75, borderRadius: ring.s * 0.2,
-              backgroundColor: ring.c,
-              top: size * 0.5 - (ring.s * 0.75) / 2,
-              left: size * 0.5 - ring.s / 2,
-              borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)',
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              {i >= 3 && <Text style={{ fontSize: 9, fontWeight: '900', color: i === 4 ? '#000' : '#FFF' }}>{ring.label}</Text>}
-            </View>
-          ))}
+          {/* 5 — Body / foam background */}
+          <View style={{
+            position: 'absolute', top: cy - bodyH / 2, left: cx - bodyW / 2,
+            width: bodyW, height: bodyH, borderRadius: size * 0.12,
+            backgroundColor: '#8B7355', borderWidth: 1, borderColor: '#6B5335',
+          }} />
+          {/* 5 label */}
+          <Text style={{ position: 'absolute', top: cy - bodyH / 2 + 6, left: cx - bodyW / 2 + 10, fontSize: 11, fontWeight: '900', color: '#FFF' }}>5</Text>
+
+          {/* 8 ring — large oval */}
+          <View style={{
+            position: 'absolute', top: cy - ring8H / 2, left: cx - ring8W / 2,
+            width: ring8W, height: ring8H, borderRadius: ring8H / 2,
+            backgroundColor: '#444444', borderWidth: 2, borderColor: '#666',
+          }} />
+          {/* 8 label */}
+          <Text style={{ position: 'absolute', top: cy - ring8H / 2 + 4, left: cx - ring8W / 2 + 8, fontSize: 10, fontWeight: '900', color: '#CCC' }}>8</Text>
+
+          {/* 10 ring — inside the 8 */}
+          <View style={{
+            position: 'absolute', top: cy - ring10H / 2, left: cx - ring10W / 2,
+            width: ring10W, height: ring10H, borderRadius: ring10H / 2,
+            backgroundColor: '#222222', borderWidth: 2, borderColor: '#00A3FF',
+          }} />
+          {/* 10 label */}
+          <Text style={{ position: 'absolute', top: cy - ring10H / 2 + 3, left: cx + ring10W / 2 - 16, fontSize: 9, fontWeight: '900', color: '#00A3FF' }}>10</Text>
+
+          {/* Upper 12 — small circle inside top of 10 ring */}
+          <View style={{
+            position: 'absolute',
+            top: cy - ring10H / 2 + ring10H * 0.12,
+            left: cx - innerR,
+            width: innerR * 2, height: innerR * 2, borderRadius: innerR,
+            backgroundColor: '#FF4444', borderWidth: 1.5, borderColor: '#FF6666',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 7, fontWeight: '900', color: '#FFF' }}>12</Text>
+          </View>
+
+          {/* Center 10 — small circle in center of 10 ring */}
+          <View style={{
+            position: 'absolute',
+            top: cy - innerR,
+            left: cx - innerR,
+            width: innerR * 2, height: innerR * 2, borderRadius: innerR,
+            backgroundColor: '#FFD700', borderWidth: 1.5, borderColor: '#FFAA00',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 7, fontWeight: '900', color: '#000' }}>10</Text>
+          </View>
+
+          {/* Lower 12 — small circle inside bottom of 10 ring */}
+          <View style={{
+            position: 'absolute',
+            top: cy + ring10H / 2 - ring10H * 0.12 - innerR * 2,
+            left: cx - innerR,
+            width: innerR * 2, height: innerR * 2, borderRadius: innerR,
+            backgroundColor: '#FF4444', borderWidth: 1.5, borderColor: '#FF6666',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 7, fontWeight: '900', color: '#FFF' }}>12</Text>
+          </View>
+
+          {/* 14 ring — small circle off to the right side of the 8 ring */}
+          <View style={{
+            position: 'absolute',
+            top: cy + ring8H / 2 - ring14R * 2,
+            left: cx + ring8W / 2 + size * 0.02,
+            width: ring14R * 2, height: ring14R * 2, borderRadius: ring14R,
+            backgroundColor: '#00FF88', borderWidth: 1.5, borderColor: '#00CC66',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Text style={{ fontSize: 7, fontWeight: '900', color: '#000' }}>14</Text>
+          </View>
         </>
       );
     }
