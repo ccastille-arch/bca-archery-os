@@ -264,6 +264,19 @@ export default function Dashboard() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionCard}
+            onPress={() => router.push('/targets-3d')}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={['#8B452620', '#8B452605'] as [string, string]}
+              style={styles.actionGradient}
+            >
+              <Ionicons name="paw" size={32} color="#8B4526" />
+              <Text style={[styles.actionText, { color: '#8B4526' }]}>3D Targets</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => router.push('/forum')}
             activeOpacity={0.7}
           >

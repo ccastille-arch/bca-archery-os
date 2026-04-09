@@ -74,6 +74,7 @@ export default function RootLayout() {
         <Tabs.Screen name="rounds" options={{ href: null }} />
         <Tabs.Screen name="score-round" options={{ href: null }} />
         <Tabs.Screen name="score-live" options={{ href: null }} />
+        <Tabs.Screen name="targets-3d" options={{ href: null }} />
       </Tabs>
     </>
   );
