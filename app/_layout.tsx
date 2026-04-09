@@ -132,6 +132,7 @@ export default function RootLayout() {
         <Tabs.Screen name="customize" options={{ href: null }} />
         <Tabs.Screen name="expert-apply" options={{ href: null }} />
         <Tabs.Screen name="user-management" options={{ href: null }} />
+        <Tabs.Screen name="change-password" options={{ href: null }} />
       </Tabs>
     </>
   );

@@ -159,6 +159,7 @@ export async function seedAdminAccount(): Promise<void> {
       password: 'Brayden25!',
       displayName: 'Cody (Admin)',
       role: 'admin',
+      canInvite: true,
       createdAt: new Date().toISOString(),
     };
     await saveAll(KEYS.AUTH_USERS, [admin, ...users]);
@@ -192,6 +193,30 @@ export async function getAllUsers(): Promise<AppUser[]> {
 
 export async function createUser(user: AppUser): Promise<void> {
   await saveOne(KEYS.AUTH_USERS, user, () => getAll<AppUser>(KEYS.AUTH_USERS));
+}
+
+export async function changePassword(userId: string, newPassword: string): Promise<boolean> {
+  const users = await getAll<AppUser>(KEYS.AUTH_USERS);
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx < 0) return false;
+  users[idx].password = newPassword;
+  await saveAll(KEYS.AUTH_USERS, users);
+  // Update session too
+  const session = await getCurrentUser();
+  if (session && session.id === userId) {
+    session.password = newPassword;
+    await AsyncStorage.setItem(KEYS.AUTH_SESSION, JSON.stringify(session));
+  }
+  return true;
+}
+
+export async function updateUserPermissions(userId: string, canInvite: boolean): Promise<void> {
+  const users = await getAll<AppUser>(KEYS.AUTH_USERS);
+  const idx = users.findIndex((u) => u.id === userId);
+  if (idx >= 0) {
+    users[idx].canInvite = canInvite;
+    await saveAll(KEYS.AUTH_USERS, users);
+  }
 }
 
 export async function deleteUser(id: string): Promise<void> {

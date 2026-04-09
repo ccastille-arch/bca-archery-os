@@ -324,6 +324,7 @@ export interface AppUser {
   displayName: string;
   role: 'admin' | 'user';
   phone?: string;
+  canInvite: boolean;
   createdAt: string;
   lastLogin?: string;
 }

@@ -251,11 +251,17 @@ export default function Dashboard() {
         </View>
       )}
 
-      {/* Logout */}
-      <TouchableOpacity style={styles.logoutBtn} onPress={async () => { await logout(); router.replace('/login'); }}>
-        <Ionicons name="log-out" size={14} color={colors.danger} />
-        <Text style={styles.logoutText}>Log Out</Text>
-      </TouchableOpacity>
+      {/* Account actions */}
+      <View style={styles.accountActions}>
+        <TouchableOpacity style={styles.accountBtn} onPress={() => router.push('/change-password')}>
+          <Ionicons name="key" size={14} color={colors.secondary} />
+          <Text style={[styles.accountBtnText, { color: colors.secondary }]}>Change Password</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.accountBtn} onPress={async () => { await logout(); router.replace('/login'); }}>
+          <Ionicons name="log-out" size={14} color={colors.danger} />
+          <Text style={[styles.accountBtnText, { color: colors.danger }]}>Log Out</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -351,8 +357,9 @@ const styles = StyleSheet.create({
   adminControls: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md, marginTop: spacing.sm },
   adminBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   adminBtnText: { fontSize: fontSize.xs, fontWeight: '700' },
-  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: spacing.md, marginTop: spacing.sm, marginBottom: spacing.xl },
-  logoutText: { fontSize: fontSize.sm, color: colors.danger, fontWeight: '600' },
+  accountActions: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md, marginTop: spacing.sm, marginBottom: spacing.xl },
+  accountBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border },
+  accountBtnText: { fontSize: fontSize.xs, fontWeight: '700' },
   customizeBtnText: { fontSize: fontSize.xs, fontWeight: '700', color: colors.secondary },
   targetMapBtn: { borderRadius: borderRadius.md, overflow: 'hidden', borderWidth: 1, borderColor: colors.primary + '40', marginBottom: spacing.md },
   targetMapGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md },
