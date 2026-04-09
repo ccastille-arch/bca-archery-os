@@ -245,3 +245,99 @@ export interface Tournament {
   arrowConfigId?: string;
   notes: string;
 }
+
+// ==================== SOCIAL / COMMUNITY ====================
+
+export interface Profile {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string;
+  bio: string;
+  is_expert: boolean;
+  created_at: string;
+}
+
+export interface ForumPost {
+  id: string;
+  user_id: string;
+  title: string;
+  body: string;
+  image_url?: string;
+  category: string;
+  likes_count: number;
+  replies_count: number;
+  created_at: string;
+  // Joined
+  profiles?: Profile;
+}
+
+export interface ForumReply {
+  id: string;
+  post_id: string;
+  user_id: string;
+  body: string;
+  image_url?: string;
+  created_at: string;
+  profiles?: Profile;
+}
+
+export const FORUM_CATEGORIES = [
+  'General Discussion',
+  'Equipment Reviews',
+  'Form & Technique',
+  'Tuning Help',
+  'Tournament Talk',
+  'Hunting',
+  'For Sale / Trade',
+] as const;
+
+export interface Expert {
+  id: string;
+  user_id: string;
+  name: string;
+  bio: string;
+  specialties: string[];
+  credentials: string;
+  live_rate: number;
+  message_rate: number;
+  availability_status: 'available' | 'busy' | 'offline';
+  avatar_url: string;
+  rating: number;
+  total_sessions: number;
+  total_messages: number;
+  created_at: string;
+  // Joined
+  profiles?: Profile;
+}
+
+export const EXPERT_SPECIALTIES = [
+  '3D / ASA',
+  'Target / Indoor',
+  'Field Archery',
+  'Hunting',
+  'Bow Tuning',
+  'Mental Game',
+  'Form & Technique',
+  'Equipment Setup',
+  'Youth Coaching',
+] as const;
+
+export interface Booking {
+  id: string;
+  expert_id: string;
+  user_id: string;
+  service_type: 'live' | 'message';
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled';
+  message: string;
+  expert_reply?: string;
+  amount: number;
+  platform_fee: number;
+  expert_payout: number;
+  scheduled_at?: string;
+  duration_min: number;
+  created_at: string;
+  // Joined
+  experts?: Expert;
+  profiles?: Profile;
+}

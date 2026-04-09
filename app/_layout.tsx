@@ -56,6 +56,15 @@ export default function RootLayout() {
         <Tabs.Screen name="tune-detail" options={{ href: null }} />
         <Tabs.Screen name="tournaments" options={{ href: null }} />
         <Tabs.Screen name="tournament-detail" options={{ href: null }} />
+        <Tabs.Screen name="auth" options={{ href: null }} />
+        <Tabs.Screen name="profile" options={{ href: null }} />
+        <Tabs.Screen name="forum" options={{ href: null }} />
+        <Tabs.Screen name="forum-post" options={{ href: null }} />
+        <Tabs.Screen name="forum-new" options={{ href: null }} />
+        <Tabs.Screen name="experts" options={{ href: null }} />
+        <Tabs.Screen name="expert-profile" options={{ href: null }} />
+        <Tabs.Screen name="expert-dashboard" options={{ href: null }} />
+        <Tabs.Screen name="booking" options={{ href: null }} />
       </Tabs>
     </>
   );

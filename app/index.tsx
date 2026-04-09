@@ -218,6 +218,45 @@ export default function Dashboard() {
               <Text style={[styles.actionText, { color: '#FF8C00' }]}>Stab Lab</Text>
             </LinearGradient>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/forum')}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={['#9B59B620', '#9B59B605'] as [string, string]}
+              style={styles.actionGradient}
+            >
+              <Ionicons name="chatbubbles" size={32} color="#9B59B6" />
+              <Text style={[styles.actionText, { color: '#9B59B6' }]}>Forum</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/experts')}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={['#E74C3C20', '#E74C3C05'] as [string, string]}
+              style={styles.actionGradient}
+            >
+              <Ionicons name="people" size={32} color="#E74C3C" />
+              <Text style={[styles.actionText, { color: '#E74C3C' }]}>Ask Experts</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/profile')}
+            activeOpacity={0.7}
+          >
+            <LinearGradient
+              colors={[colors.text + '10', colors.text + '02'] as [string, string]}
+              style={styles.actionGradient}
+            >
+              <Ionicons name="person-circle" size={32} color={colors.text} />
+              <Text style={[styles.actionText, { color: colors.text }]}>My Profile</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       </AnimatedEntry>
 
