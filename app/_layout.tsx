@@ -83,6 +83,7 @@ export default function RootLayout() {
         <Tabs.Screen name="swap-shop" options={{ href: null }} />
         <Tabs.Screen name="swap-listing" options={{ href: null }} />
         <Tabs.Screen name="customize" options={{ href: null }} />
+        <Tabs.Screen name="expert-apply" options={{ href: null }} />
       </Tabs>
     </>
   );

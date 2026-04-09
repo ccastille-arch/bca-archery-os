@@ -345,6 +345,48 @@ export const SWAP_CATEGORIES = [
   'Other',
 ] as const;
 
+// ==================== EXPERT APPLICATION ====================
+
+export type ExpertTier = 'competitive' | 'semi-pro' | 'pro';
+
+export const EXPERT_TIER_INFO: Record<ExpertTier, { label: string; description: string; color: string; icon: string; requirements: string }> = {
+  'competitive': {
+    label: 'Level 1 — Competitive Archer',
+    description: 'Active competitive archer with tournament experience who can help newer shooters with fundamentals, equipment setup, and getting started in competition.',
+    color: '#00A3FF',
+    icon: 'ribbon',
+    requirements: 'Must have competed in organized archery events (ASA, IBO, NFAA, or local tournaments). Should be able to help with basic form, equipment selection, and competition preparation.',
+  },
+  'semi-pro': {
+    label: 'Level 2 — Semi-Pro',
+    description: 'Advanced competitive archer with consistent top finishes who can provide in-depth coaching on tuning, mental game, and competitive strategy.',
+    color: '#FFB800',
+    icon: 'medal',
+    requirements: 'Consistent top-10 finishes at regional or state level events. Deep knowledge of bow tuning, arrow building, and competitive archery strategy.',
+  },
+  'pro': {
+    label: 'Level 3 — Professional Shooter',
+    description: 'Professional-level archer competing at the national or pro level who can offer elite coaching, sponsorship guidance, and advanced performance optimization.',
+    color: '#FF4444',
+    icon: 'trophy',
+    requirements: 'Active or former professional archer. Competes at ASA Pro/Am, IBO World, NFAA Nationals, or equivalent level. May hold sponsorships or coaching certifications.',
+  },
+};
+
+export interface ExpertApplication {
+  id: string;
+  applicantName: string;
+  tier: ExpertTier;
+  bio: string;
+  experience: string;
+  tournaments: string;
+  specialties: string[];
+  contactInfo: string;
+  status: 'pending' | 'approved' | 'denied';
+  adminMessages: { from: 'admin' | 'applicant'; message: string; timestamp: string }[];
+  createdAt: string;
+}
+
 // ==================== FEEDBACK ====================
 
 export type FeedbackType = 'bug' | 'recommendation' | 'feature-request';

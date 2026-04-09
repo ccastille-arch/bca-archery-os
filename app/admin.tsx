@@ -6,9 +6,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { getAnalyticsSummary, clearAnalytics, type AnalyticsSummary } from '../lib/analytics';
-import { getShots, getLiveRounds, getBowConfigs, getArrowConfigs, getEquipmentShotCounts, getFeedback, saveFeedback } from '../lib/storage';
-import type { FeedbackItem } from '../lib/types';
-import { FEEDBACK_TYPE_LABELS } from '../lib/types';
+import { getShots, getLiveRounds, getBowConfigs, getArrowConfigs, getEquipmentShotCounts, getFeedback, saveFeedback, getExpertApps, saveExpertApp } from '../lib/storage';
+import type { FeedbackItem, ExpertApplication } from '../lib/types';
+import { FEEDBACK_TYPE_LABELS, EXPERT_TIER_INFO } from '../lib/types';
 import { useScreenTracking } from '../lib/useAnalytics';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -40,6 +40,8 @@ export default function AdminScreen() {
   useScreenTracking('admin');
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
+  const [expertApps, setExpertApps] = useState<ExpertApplication[]>([]);
+  const [adminReply, setAdminReply] = useState<Record<string, string>>({});
   const [dataStats, setDataStats] = useState<{
     totalShots: number; totalRounds: number; asaRounds: number; iboRounds: number;
     bowCount: number; arrowCount: number; bowShotCounts: Record<string, number>;
@@ -50,10 +52,11 @@ export default function AdminScreen() {
   const loadData = useCallback(async () => {
     const [s, shots, rounds, bows, arrows, equipCounts, fb] = await Promise.all([
       getAnalyticsSummary(), getShots(), getLiveRounds(),
-      getBowConfigs(), getArrowConfigs(), getEquipmentShotCounts(), getFeedback(),
+      getBowConfigs(), getArrowConfigs(), getEquipmentShotCounts(), getFeedback(), getExpertApps(),
     ]);
     setSummary(s);
     setFeedback(fb);
+    setExpertApps(ea);
 
     const bowNames: Record<string, string> = {};
     bows.forEach((b) => { bowNames[b.id] = b.name; });
@@ -272,6 +275,102 @@ export default function AdminScreen() {
               </View>
             ))}
           </View>
+        </AnimatedEntry>
+
+        {/* Expert Applications */}
+        <AnimatedEntry delay={290}>
+          <Text style={styles.sectionTitle}>
+            EXPERT APPLICATIONS {expertApps.filter((a) => a.status === 'pending').length > 0 &&
+              `(${expertApps.filter((a) => a.status === 'pending').length} pending)`}
+          </Text>
+          {expertApps.length === 0 ? (
+            <View style={styles.emptyInbox}>
+              <Ionicons name="school-outline" size={32} color={colors.textMuted} />
+              <Text style={{ color: colors.textMuted, fontSize: fontSize.sm, marginTop: spacing.sm }}>No applications yet</Text>
+            </View>
+          ) : (
+            expertApps.map((app) => {
+              const tierInfo = EXPERT_TIER_INFO[app.tier];
+              return (
+                <View key={app.id} style={[styles.feedbackCard, { borderLeftWidth: 3, borderLeftColor: tierInfo.color }]}>
+                  <View style={styles.feedbackHeader}>
+                    <View style={[styles.feedbackTypeBadge, { backgroundColor: tierInfo.color + '20' }]}>
+                      <Ionicons name={tierInfo.icon as any} size={12} color={tierInfo.color} />
+                      <Text style={[styles.feedbackTypeText, { color: tierInfo.color }]}>{tierInfo.label}</Text>
+                    </View>
+                    <View style={[styles.feedbackStatusBadge, {
+                      backgroundColor: app.status === 'pending' ? colors.warning + '20' : app.status === 'approved' ? colors.primary + '20' : colors.danger + '20',
+                    }]}>
+                      <Text style={[styles.feedbackStatusText, {
+                        color: app.status === 'pending' ? colors.warning : app.status === 'approved' ? colors.primary : colors.danger,
+                      }]}>{app.status}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.feedbackSubject}>{app.applicantName}</Text>
+                  <Text style={styles.feedbackBody} numberOfLines={3}>{app.bio}</Text>
+                  {app.experience ? <Text style={{ fontSize: fontSize.xs, color: colors.textMuted, marginTop: spacing.xs }}>Experience: {app.experience}</Text> : null}
+                  {app.specialties.length > 0 && (
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: spacing.xs }}>
+                      {app.specialties.map((s) => (
+                        <Text key={s} style={{ fontSize: 9, color: tierInfo.color, backgroundColor: tierInfo.color + '15', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 10 }}>{s}</Text>
+                      ))}
+                    </View>
+                  )}
+                  <Text style={styles.feedbackDate}>{new Date(app.createdAt).toLocaleDateString()}</Text>
+
+                  {/* Admin actions */}
+                  {app.status === 'pending' && (
+                    <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm }}>
+                      <TouchableOpacity style={[styles.markReviewedBtn, { backgroundColor: colors.primary + '15' }]} onPress={async () => {
+                        const updated = { ...app, status: 'approved' as const };
+                        await saveExpertApp(updated);
+                        setExpertApps(expertApps.map((a) => a.id === app.id ? updated : a));
+                      }}>
+                        <Ionicons name="checkmark" size={14} color={colors.primary} />
+                        <Text style={[styles.markReviewedText, { color: colors.primary }]}>Approve</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={[styles.markReviewedBtn, { backgroundColor: colors.danger + '15' }]} onPress={async () => {
+                        const updated = { ...app, status: 'denied' as const };
+                        await saveExpertApp(updated);
+                        setExpertApps(expertApps.map((a) => a.id === app.id ? updated : a));
+                      }}>
+                        <Ionicons name="close" size={14} color={colors.danger} />
+                        <Text style={[styles.markReviewedText, { color: colors.danger }]}>Deny</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                  {/* Messages */}
+                  {app.adminMessages.length > 0 && (
+                    <View style={{ marginTop: spacing.sm }}>
+                      {app.adminMessages.map((msg, i) => (
+                        <Text key={i} style={{ fontSize: fontSize.xs, color: msg.from === 'admin' ? colors.secondary : colors.textSecondary, marginBottom: 2 }}>
+                          {msg.from === 'admin' ? 'You' : app.applicantName}: {msg.message}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* Admin reply */}
+                  <View style={{ flexDirection: 'row', gap: spacing.xs, marginTop: spacing.sm }}>
+                    <TextInput style={{ flex: 1, backgroundColor: colors.surfaceLight, borderRadius: borderRadius.sm, padding: spacing.xs, paddingHorizontal: spacing.sm, color: colors.text, fontSize: fontSize.xs, borderWidth: 1, borderColor: colors.border }}
+                      value={adminReply[app.id] || ''} onChangeText={(t) => setAdminReply({ ...adminReply, [app.id]: t })}
+                      placeholder="Message applicant..." placeholderTextColor={colors.textMuted} />
+                    <TouchableOpacity style={{ backgroundColor: colors.secondary, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, justifyContent: 'center' }}
+                      onPress={async () => {
+                        if (!adminReply[app.id]?.trim()) return;
+                        const updated = { ...app, adminMessages: [...app.adminMessages, { from: 'admin' as const, message: adminReply[app.id].trim(), timestamp: new Date().toISOString() }] };
+                        await saveExpertApp(updated);
+                        setExpertApps(expertApps.map((a) => a.id === app.id ? updated : a));
+                        setAdminReply({ ...adminReply, [app.id]: '' });
+                      }}>
+                      <Ionicons name="send" size={14} color={colors.text} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })
+          )}
         </AnimatedEntry>
 
         {/* Feedback Inbox */}

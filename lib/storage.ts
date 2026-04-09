@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound, FeedbackItem, SwapListing } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound, FeedbackItem, SwapListing, ExpertApplication } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -13,6 +13,7 @@ const KEYS = {
   LIVE_ROUNDS: '@bca_live_rounds',
   FEEDBACK: '@bca_feedback',
   SWAP_SHOP: '@bca_swap_shop',
+  EXPERT_APPS: '@bca_expert_apps',
   PRACTICES: '@bca_practices',
   EXPENSES: '@bca_expenses',
   FORUM_POSTS: '@bca_forum_posts',
@@ -85,6 +86,11 @@ export const deleteTuneLog = (id: string) => deleteOne<TuneLog>(KEYS.TUNE_LOGS, 
 export const getTournaments = (): Promise<Tournament[]> => getAll<Tournament>(KEYS.TOURNAMENTS);
 export const saveTournament = (t: Tournament) => saveOne(KEYS.TOURNAMENTS, t, getTournaments);
 export const deleteTournament = (id: string) => deleteOne<Tournament>(KEYS.TOURNAMENTS, id, getTournaments);
+
+// Expert Applications
+export const getExpertApps = (): Promise<ExpertApplication[]> => getAll<ExpertApplication>(KEYS.EXPERT_APPS);
+export const saveExpertApp = (a: ExpertApplication) => saveOne(KEYS.EXPERT_APPS, a, getExpertApps);
+export const deleteExpertApp = (id: string) => deleteOne<ExpertApplication>(KEYS.EXPERT_APPS, id, getExpertApps);
 
 // Swap Shop
 export const getSwapListings = (): Promise<SwapListing[]> => getAll<SwapListing>(KEYS.SWAP_SHOP);

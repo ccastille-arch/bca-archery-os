@@ -34,6 +34,7 @@ export const ALL_DASHBOARD_CARDS: DashCard[] = [
   { id: 'ballistics', label: 'Ballistics', icon: 'rocket', color: '#FF8C00', route: '/ballistics' },
   { id: 'swap-shop', label: 'Swap Shop', icon: 'cart', color: '#27AE60', route: '/swap-shop' },
   { id: 'feedback', label: 'Feedback', icon: 'chatbox-ellipses', color: '#00A3FF', route: '/feedback' },
+  { id: 'expert-apply', label: 'Become Expert', icon: 'school', color: '#FFB800', route: '/expert-apply' },
 ];
 
 export const DEFAULT_ORDER = ALL_DASHBOARD_CARDS.map((c) => c.id);
