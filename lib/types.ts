@@ -246,7 +246,31 @@ export interface Tournament {
   notes: string;
 }
 
-// ==================== SOCIAL / COMMUNITY ====================
+// ==================== LOCAL FORUM ====================
+
+export interface LocalForumPost {
+  id: string;
+  author: string;
+  title: string;
+  body: string;
+  category: string;
+  imageUrl?: string;
+  likes: number;
+  replies: number;
+  pinned?: boolean;
+  createdAt: string;
+}
+
+export interface LocalForumReply {
+  id: string;
+  postId: string;
+  author: string;
+  body: string;
+  imageUrl?: string;
+  createdAt: string;
+}
+
+// ==================== SOCIAL / COMMUNITY (SUPABASE) ====================
 
 export interface Profile {
   id: string;

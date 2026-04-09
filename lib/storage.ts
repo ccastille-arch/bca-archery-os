@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -10,6 +10,9 @@ const KEYS = {
   STAB_TESTS: '@bca_stab_tests',
   TUNE_LOGS: '@bca_tune_logs',
   TOURNAMENTS: '@bca_tournaments',
+  FORUM_POSTS: '@bca_forum_posts',
+  FORUM_REPLIES: '@bca_forum_replies',
+  USER_PROFILE: '@bca_user_profile',
 };
 
 // Generic helpers
@@ -77,3 +80,22 @@ export const deleteTuneLog = (id: string) => deleteOne<TuneLog>(KEYS.TUNE_LOGS, 
 export const getTournaments = (): Promise<Tournament[]> => getAll<Tournament>(KEYS.TOURNAMENTS);
 export const saveTournament = (t: Tournament) => saveOne(KEYS.TOURNAMENTS, t, getTournaments);
 export const deleteTournament = (id: string) => deleteOne<Tournament>(KEYS.TOURNAMENTS, id, getTournaments);
+
+// Forum Posts (local)
+export const getForumPosts = (): Promise<LocalForumPost[]> => getAll<LocalForumPost>(KEYS.FORUM_POSTS);
+export const saveForumPost = (p: LocalForumPost) => saveOne(KEYS.FORUM_POSTS, p, getForumPosts);
+export const deleteForumPost = (id: string) => deleteOne<LocalForumPost>(KEYS.FORUM_POSTS, id, getForumPosts);
+
+// Forum Replies (local)
+export const getForumReplies = (): Promise<LocalForumReply[]> => getAll<LocalForumReply>(KEYS.FORUM_REPLIES);
+export const saveForumReply = (r: LocalForumReply) => saveOne(KEYS.FORUM_REPLIES, r, getForumReplies);
+export const deleteForumReply = (id: string) => deleteOne<LocalForumReply>(KEYS.FORUM_REPLIES, id, getForumReplies);
+
+// User profile (local)
+export async function getUserProfile(): Promise<{ displayName: string; username: string } | null> {
+  const raw = await AsyncStorage.getItem(KEYS.USER_PROFILE);
+  return raw ? JSON.parse(raw) : null;
+}
+export async function saveUserProfile(profile: { displayName: string; username: string }): Promise<void> {
+  await AsyncStorage.setItem(KEYS.USER_PROFILE, JSON.stringify(profile));
+}
