@@ -315,6 +315,29 @@ export interface Tournament {
   notes: string;
 }
 
+// ==================== AUTH ====================
+
+export interface AppUser {
+  id: string;
+  username: string;
+  password: string;
+  displayName: string;
+  role: 'admin' | 'user';
+  phone?: string;
+  createdAt: string;
+  lastLogin?: string;
+}
+
+export interface Invite {
+  id: string;
+  recipientName: string;
+  phone: string;
+  username: string;
+  password: string;
+  sent: boolean;
+  createdAt: string;
+}
+
 // ==================== SWAP SHOP ====================
 
 export interface SwapListing {

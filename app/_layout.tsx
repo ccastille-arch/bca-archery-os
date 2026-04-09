@@ -1,12 +1,40 @@
-import { useEffect } from 'react';
-import { Tabs } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { Tabs, useRouter, useSegments } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from '../lib/theme';
 import { trackAppOpen } from '../lib/analytics';
+import { getCurrentUser, seedAdminAccount } from '../lib/storage';
 
 export default function RootLayout() {
-  useEffect(() => { trackAppOpen(); }, []);
+  const [checking, setChecking] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const segments = useSegments();
+
+  useEffect(() => {
+    (async () => {
+      await seedAdminAccount();
+      const user = await getCurrentUser();
+      setLoggedIn(!!user);
+      setChecking(false);
+      if (user) trackAppOpen();
+    })();
+  }, []);
+
+  // Re-check auth when navigating
+  useEffect(() => {
+    getCurrentUser().then((u) => setLoggedIn(!!u));
+  }, [segments]);
+
+  if (checking) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <>
       <StatusBar style="light" />
@@ -28,27 +56,46 @@ export default function RootLayout() {
           tabBarLabelStyle: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
         }}
       >
-        <Tabs.Screen name="index" options={{
-          title: 'Home', headerTitle: 'BCA ARCHERY OS',
-          tabBarIcon: ({ color, size }) => <Ionicons name="grid" size={size} color={color} />,
-        }} />
-        <Tabs.Screen name="shots" options={{
-          title: 'Shots', headerTitle: 'SHOT LOG',
-          tabBarIcon: ({ color, size }) => <Ionicons name="locate" size={size} color={color} />,
-        }} />
-        <Tabs.Screen name="gear" options={{
-          title: 'Gear', headerTitle: 'GEAR',
-          tabBarIcon: ({ color, size }) => <Ionicons name="fitness" size={size} color={color} />,
-        }} />
-        <Tabs.Screen name="practices" options={{
-          title: 'Practice', headerTitle: 'PRACTICE LOG',
-          tabBarIcon: ({ color, size }) => <Ionicons name="calendar" size={size} color={color} />,
-        }} />
-        <Tabs.Screen name="expenses" options={{
-          title: 'Expenses', headerTitle: 'EXPENSE TRACKER',
-          tabBarIcon: ({ color, size }) => <Ionicons name="cash" size={size} color={color} />,
-        }} />
-        {/* Hidden detail/sub screens */}
+        {!loggedIn ? (
+          <>
+            <Tabs.Screen name="login" options={{
+              title: 'Login', headerShown: false,
+              tabBarStyle: { display: 'none' },
+              tabBarIcon: ({ color, size }) => <Ionicons name="log-in" size={size} color={color} />,
+            }} />
+            {/* Hide all other screens when not logged in */}
+            <Tabs.Screen name="index" options={{ href: null }} />
+            <Tabs.Screen name="shots" options={{ href: null }} />
+            <Tabs.Screen name="gear" options={{ href: null }} />
+            <Tabs.Screen name="practices" options={{ href: null }} />
+            <Tabs.Screen name="expenses" options={{ href: null }} />
+          </>
+        ) : (
+          <>
+            <Tabs.Screen name="index" options={{
+              title: 'Home', headerTitle: 'BCA ARCHERY OS',
+              tabBarIcon: ({ color, size }) => <Ionicons name="grid" size={size} color={color} />,
+            }} />
+            <Tabs.Screen name="shots" options={{
+              title: 'Shots', headerTitle: 'SHOT LOG',
+              tabBarIcon: ({ color, size }) => <Ionicons name="locate" size={size} color={color} />,
+            }} />
+            <Tabs.Screen name="gear" options={{
+              title: 'Gear', headerTitle: 'GEAR',
+              tabBarIcon: ({ color, size }) => <Ionicons name="fitness" size={size} color={color} />,
+            }} />
+            <Tabs.Screen name="practices" options={{
+              title: 'Practice', headerTitle: 'PRACTICE LOG',
+              tabBarIcon: ({ color, size }) => <Ionicons name="calendar" size={size} color={color} />,
+            }} />
+            <Tabs.Screen name="expenses" options={{
+              title: 'Expenses', headerTitle: 'EXPENSE TRACKER',
+              tabBarIcon: ({ color, size }) => <Ionicons name="cash" size={size} color={color} />,
+            }} />
+            <Tabs.Screen name="login" options={{ href: null }} />
+          </>
+        )}
+        {/* Hidden detail screens */}
         <Tabs.Screen name="sights" options={{ href: null }} />
         <Tabs.Screen name="sessions" options={{ href: null }} />
         <Tabs.Screen name="shot-detail" options={{ href: null }} />
@@ -84,6 +131,7 @@ export default function RootLayout() {
         <Tabs.Screen name="swap-listing" options={{ href: null }} />
         <Tabs.Screen name="customize" options={{ href: null }} />
         <Tabs.Screen name="expert-apply" options={{ href: null }} />
+        <Tabs.Screen name="user-management" options={{ href: null }} />
       </Tabs>
     </>
   );

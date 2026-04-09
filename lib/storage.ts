@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound, FeedbackItem, SwapListing, ExpertApplication } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound, FeedbackItem, SwapListing, ExpertApplication, AppUser, Invite } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -14,6 +14,9 @@ const KEYS = {
   FEEDBACK: '@bca_feedback',
   SWAP_SHOP: '@bca_swap_shop',
   EXPERT_APPS: '@bca_expert_apps',
+  AUTH_USERS: '@bca_auth_users',
+  AUTH_SESSION: '@bca_auth_session',
+  INVITES: '@bca_invites',
   PRACTICES: '@bca_practices',
   EXPENSES: '@bca_expenses',
   FORUM_POSTS: '@bca_forum_posts',
@@ -142,6 +145,67 @@ export const deleteForumPost = (id: string) => deleteOne<LocalForumPost>(KEYS.FO
 export const getForumReplies = (): Promise<LocalForumReply[]> => getAll<LocalForumReply>(KEYS.FORUM_REPLIES);
 export const saveForumReply = (r: LocalForumReply) => saveOne(KEYS.FORUM_REPLIES, r, getForumReplies);
 export const deleteForumReply = (id: string) => deleteOne<LocalForumReply>(KEYS.FORUM_REPLIES, id, getForumReplies);
+
+// ===== AUTH SYSTEM =====
+
+// Seed admin account on first load
+export async function seedAdminAccount(): Promise<void> {
+  const users = await getAll<AppUser>(KEYS.AUTH_USERS);
+  const adminExists = users.some((u) => u.role === 'admin');
+  if (!adminExists) {
+    const admin: AppUser = {
+      id: 'admin-001',
+      username: 'cody',
+      password: 'Brayden25!',
+      displayName: 'Cody (Admin)',
+      role: 'admin',
+      createdAt: new Date().toISOString(),
+    };
+    await saveAll(KEYS.AUTH_USERS, [admin, ...users]);
+  }
+}
+
+export async function login(username: string, password: string): Promise<AppUser | null> {
+  const users = await getAll<AppUser>(KEYS.AUTH_USERS);
+  const user = users.find((u) => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+  if (user) {
+    const updated = { ...user, lastLogin: new Date().toISOString() };
+    await saveOne(KEYS.AUTH_USERS, updated, () => getAll<AppUser>(KEYS.AUTH_USERS));
+    await AsyncStorage.setItem(KEYS.AUTH_SESSION, JSON.stringify(updated));
+    return updated;
+  }
+  return null;
+}
+
+export async function logout(): Promise<void> {
+  await AsyncStorage.removeItem(KEYS.AUTH_SESSION);
+}
+
+export async function getCurrentUser(): Promise<AppUser | null> {
+  const raw = await AsyncStorage.getItem(KEYS.AUTH_SESSION);
+  return raw ? JSON.parse(raw) : null;
+}
+
+export async function getAllUsers(): Promise<AppUser[]> {
+  return getAll<AppUser>(KEYS.AUTH_USERS);
+}
+
+export async function createUser(user: AppUser): Promise<void> {
+  await saveOne(KEYS.AUTH_USERS, user, () => getAll<AppUser>(KEYS.AUTH_USERS));
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await deleteOne<AppUser>(KEYS.AUTH_USERS, id, () => getAll<AppUser>(KEYS.AUTH_USERS));
+}
+
+// Invites
+export async function getInvites(): Promise<Invite[]> {
+  return getAll<Invite>(KEYS.INVITES);
+}
+
+export async function saveInvite(invite: Invite): Promise<void> {
+  await saveOne(KEYS.INVITES, invite, getInvites);
+}
 
 // Dashboard preferences
 export async function getDashboardPrefs(): Promise<{ order: string[]; hidden: string[] } | null> {

@@ -4,7 +4,8 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
-import { getShots, getSessions, getBowConfigs, getArrowConfigs, getTournaments, getDashboardPrefs } from '../lib/storage';
+import { getShots, getSessions, getBowConfigs, getArrowConfigs, getTournaments, getDashboardPrefs, getCurrentUser, logout } from '../lib/storage';
+import type { AppUser } from '../lib/types';
 import AnimatedEntry from '../components/AnimatedEntry';
 import GradientCard from '../components/GradientCard';
 import { useScreenTracking } from '../lib/useAnalytics';
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [cardOrder, setCardOrder] = useState<string[]>(DEFAULT_ORDER);
   const [hiddenCards, setHiddenCards] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
 
   const loadData = useCallback(async () => {
     const [s, sess, bows, arrows, tourn] = await Promise.all([
@@ -30,6 +32,8 @@ export default function Dashboard() {
     setSessions(sess);
     setGearCount(bows.length + arrows.length);
     setTournaments(tourn);
+    const user = await getCurrentUser();
+    setCurrentUser(user);
     const prefs = await getDashboardPrefs();
     if (prefs) {
       setCardOrder(prefs.order.length > 0 ? prefs.order : DEFAULT_ORDER);
@@ -225,10 +229,32 @@ export default function Dashboard() {
         </AnimatedEntry>
       )}
 
-      {/* Admin link (subtle) */}
-      <TouchableOpacity style={styles.adminLink} onPress={() => router.push('/admin')}>
-        <Ionicons name="pulse" size={12} color={colors.textMuted} />
-        <Text style={styles.adminLinkText}>Admin Analytics</Text>
+      {/* User bar */}
+      <View style={styles.userBar}>
+        <Text style={styles.userBarText}>
+          Logged in as <Text style={{ color: colors.primary, fontWeight: '800' }}>{currentUser?.displayName || currentUser?.username || '—'}</Text>
+          {currentUser?.role === 'admin' && <Text style={{ color: '#FFB800' }}> (Admin)</Text>}
+        </Text>
+      </View>
+
+      {/* Admin controls */}
+      {currentUser?.role === 'admin' && (
+        <View style={styles.adminControls}>
+          <TouchableOpacity style={styles.adminBtn} onPress={() => router.push('/admin')}>
+            <Ionicons name="pulse" size={14} color="#9B59B6" />
+            <Text style={[styles.adminBtnText, { color: '#9B59B6' }]}>Analytics</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.adminBtn} onPress={() => router.push('/user-management')}>
+            <Ionicons name="people" size={14} color="#FFB800" />
+            <Text style={[styles.adminBtnText, { color: '#FFB800' }]}>Users</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Logout */}
+      <TouchableOpacity style={styles.logoutBtn} onPress={async () => { await logout(); router.replace('/login'); }}>
+        <Ionicons name="log-out" size={14} color={colors.danger} />
+        <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -320,8 +346,13 @@ const styles = StyleSheet.create({
   },
   sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.md, marginBottom: spacing.sm },
   customizeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.secondary },
-  adminLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: spacing.lg, marginTop: spacing.md },
-  adminLinkText: { fontSize: fontSize.xs, color: colors.textMuted },
+  userBar: { alignItems: 'center', paddingVertical: spacing.md, marginTop: spacing.lg, borderTopWidth: 1, borderTopColor: colors.border },
+  userBarText: { fontSize: fontSize.sm, color: colors.textSecondary },
+  adminControls: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md, marginTop: spacing.sm },
+  adminBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+  adminBtnText: { fontSize: fontSize.xs, fontWeight: '700' },
+  logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: spacing.md, marginTop: spacing.sm, marginBottom: spacing.xl },
+  logoutText: { fontSize: fontSize.sm, color: colors.danger, fontWeight: '600' },
   customizeBtnText: { fontSize: fontSize.xs, fontWeight: '700', color: colors.secondary },
   targetMapBtn: { borderRadius: borderRadius.md, overflow: 'hidden', borderWidth: 1, borderColor: colors.primary + '40', marginBottom: spacing.md },
   targetMapGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md },
