@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense, LiveRound, FeedbackItem, SwapListing } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -11,6 +11,8 @@ const KEYS = {
   TUNE_LOGS: '@bca_tune_logs',
   TOURNAMENTS: '@bca_tournaments',
   LIVE_ROUNDS: '@bca_live_rounds',
+  FEEDBACK: '@bca_feedback',
+  SWAP_SHOP: '@bca_swap_shop',
   PRACTICES: '@bca_practices',
   EXPENSES: '@bca_expenses',
   FORUM_POSTS: '@bca_forum_posts',
@@ -84,6 +86,16 @@ export const getTournaments = (): Promise<Tournament[]> => getAll<Tournament>(KE
 export const saveTournament = (t: Tournament) => saveOne(KEYS.TOURNAMENTS, t, getTournaments);
 export const deleteTournament = (id: string) => deleteOne<Tournament>(KEYS.TOURNAMENTS, id, getTournaments);
 
+// Swap Shop
+export const getSwapListings = (): Promise<SwapListing[]> => getAll<SwapListing>(KEYS.SWAP_SHOP);
+export const saveSwapListing = (l: SwapListing) => saveOne(KEYS.SWAP_SHOP, l, getSwapListings);
+export const deleteSwapListing = (id: string) => deleteOne<SwapListing>(KEYS.SWAP_SHOP, id, getSwapListings);
+
+// Feedback
+export const getFeedback = (): Promise<FeedbackItem[]> => getAll<FeedbackItem>(KEYS.FEEDBACK);
+export const saveFeedback = (f: FeedbackItem) => saveOne(KEYS.FEEDBACK, f, getFeedback);
+export const deleteFeedback = (id: string) => deleteOne<FeedbackItem>(KEYS.FEEDBACK, id, getFeedback);
+
 // Live Rounds
 export const getLiveRounds = (): Promise<LiveRound[]> => getAll<LiveRound>(KEYS.LIVE_ROUNDS);
 export const saveLiveRound = (r: LiveRound) => saveOne(KEYS.LIVE_ROUNDS, r, getLiveRounds);
@@ -124,6 +136,15 @@ export const deleteForumPost = (id: string) => deleteOne<LocalForumPost>(KEYS.FO
 export const getForumReplies = (): Promise<LocalForumReply[]> => getAll<LocalForumReply>(KEYS.FORUM_REPLIES);
 export const saveForumReply = (r: LocalForumReply) => saveOne(KEYS.FORUM_REPLIES, r, getForumReplies);
 export const deleteForumReply = (id: string) => deleteOne<LocalForumReply>(KEYS.FORUM_REPLIES, id, getForumReplies);
+
+// Dashboard preferences
+export async function getDashboardPrefs(): Promise<{ order: string[]; hidden: string[] } | null> {
+  const raw = await AsyncStorage.getItem('@bca_dashboard_prefs');
+  return raw ? JSON.parse(raw) : null;
+}
+export async function saveDashboardPrefs(prefs: { order: string[]; hidden: string[] }): Promise<void> {
+  await AsyncStorage.setItem('@bca_dashboard_prefs', JSON.stringify(prefs));
+}
 
 // User profile (local)
 export async function getUserProfile(): Promise<{ displayName: string; username: string } | null> {

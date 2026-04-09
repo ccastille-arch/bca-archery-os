@@ -11,10 +11,13 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getExpenses, saveExpense, deleteExpense } from '../lib/storage';
 import EquipmentPicker from '../components/EquipmentPicker';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { Expense } from '../lib/types';
 import { EXPENSE_CATEGORIES } from '../lib/types';
 
 export default function ExpenseDetailScreen() {
+  useScreenTracking('expense-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
@@ -74,6 +77,7 @@ export default function ExpenseDetailScreen() {
     };
 
     await saveExpense(expense);
+    trackEvent('expense_logged');
     router.back();
   };
 

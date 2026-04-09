@@ -6,10 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getLiveRounds, saveLiveRound } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { LiveRound } from '../lib/types';
 import { ASA_SCORE_VALUES, IBO_SCORE_VALUES } from '../lib/types';
 
 export default function ScoreLiveScreen() {
+  useScreenTracking('score-live');
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [round, setRound] = useState<LiveRound | null>(null);
@@ -94,6 +97,7 @@ export default function ScoreLiveScreen() {
 
     setRound(updatedRound);
     await saveLiveRound(updatedRound);
+    trackEvent('score_entered', { value: value, format: round.format });
 
     // Auto-highlight next UNSCORED shooter on THIS target only (never auto-advance target)
     const nextUnscored = findNextUnscoredOnUpdated(updatedRound, currentTargetNum, shooterOrder);

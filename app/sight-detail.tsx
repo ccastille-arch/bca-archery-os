@@ -8,9 +8,11 @@ import { Ionicons } from '@expo/vector-icons';
 import uuid from 'react-native-uuid';
 import { colors, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getSightProfiles, saveSightProfile, deleteSightProfile } from '../lib/storage';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { SightProfile, SightMark } from '../lib/types';
 
 export default function SightDetailScreen() {
+  useScreenTracking('sight-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;

@@ -10,6 +10,8 @@ import uuid from 'react-native-uuid';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getArrowConfigs, saveArrowConfig, deleteArrowConfig } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { ArrowConfig } from '../lib/types';
 
 const FIELDS: { key: keyof ArrowConfig; label: string; placeholder: string; icon: string; section: string }[] = [
@@ -29,6 +31,7 @@ const FIELDS: { key: keyof ArrowConfig; label: string; placeholder: string; icon
 ];
 
 export default function ArrowDetailScreen() {
+  useScreenTracking('arrow-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
@@ -74,6 +77,7 @@ export default function ArrowDetailScreen() {
       createdAt: new Date().toISOString(),
     };
     await saveArrowConfig(config);
+    trackEvent('arrow_saved');
     router.back();
   };
 

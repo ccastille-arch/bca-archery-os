@@ -7,9 +7,11 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getBowConfigs, getArrowConfigs, getStabilizerTests, getTuneLogs } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { BowConfig, ArrowConfig, StabilizerTest, TuneLog } from '../lib/types';
 
 export default function GearScreen() {
+  useScreenTracking('gear');
   const router = useRouter();
   const [bows, setBows] = useState<BowConfig[]>([]);
   const [arrows, setArrows] = useState<ArrowConfig[]>([]);

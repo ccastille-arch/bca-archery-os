@@ -12,9 +12,11 @@ import { getSessions, saveSession, deleteSession, getShots } from '../lib/storag
 import EquipmentPicker from '../components/EquipmentPicker';
 import AnimatedEntry from '../components/AnimatedEntry';
 import GradientCard from '../components/GradientCard';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { Session, ShotEnd } from '../lib/types';
 
 export default function SessionDetailScreen() {
+  useScreenTracking('session-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isExisting = !!id;

@@ -10,6 +10,8 @@ import uuid from 'react-native-uuid';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getBowConfigs, getArrowConfigs, getTuneLogs, saveTuneLog, deleteTuneLog } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { BowConfig, ArrowConfig, TuneLog } from '../lib/types';
 
 const TUNE_TYPES = ['paper', 'walk-back', 'french', 'bare-shaft', 'broadhead', 'group', 'other'] as const;
@@ -28,6 +30,7 @@ const emptyForm = () => ({
 });
 
 export default function TuneDetailScreen() {
+  useScreenTracking('tune-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
@@ -82,6 +85,7 @@ export default function TuneDetailScreen() {
       notes: form.notes,
     };
     await saveTuneLog(log);
+    trackEvent('tune_logged');
     router.back();
   };
 

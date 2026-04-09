@@ -6,6 +6,7 @@ import uuid from 'react-native-uuid';
 import { colors, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getForumPosts, saveForumPost, getForumReplies, saveForumReply, getUserProfile } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { LocalForumPost, LocalForumReply } from '../lib/types';
 
 function timeAgo(dateStr: string): string {
@@ -19,6 +20,7 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function ForumPostScreen() {
+  useScreenTracking('forum-post');
   const { id } = useLocalSearchParams<{ id: string }>();
   const [post, setPost] = useState<LocalForumPost | null>(null);
   const [replies, setReplies] = useState<LocalForumReply[]>([]);

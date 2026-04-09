@@ -4,18 +4,23 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
-import { getShots, getSessions, getBowConfigs, getArrowConfigs, getTournaments } from '../lib/storage';
+import { getShots, getSessions, getBowConfigs, getArrowConfigs, getTournaments, getDashboardPrefs } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
 import GradientCard from '../components/GradientCard';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { ALL_DASHBOARD_CARDS, DEFAULT_ORDER } from './customize';
 import type { ShotEnd, Session, Tournament } from '../lib/types';
 
 export default function Dashboard() {
+  useScreenTracking('dashboard');
   const router = useRouter();
   const [shots, setShots] = useState<ShotEnd[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [gearCount, setGearCount] = useState(0);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [cardOrder, setCardOrder] = useState<string[]>(DEFAULT_ORDER);
+  const [hiddenCards, setHiddenCards] = useState<string[]>([]);
 
   const loadData = useCallback(async () => {
     const [s, sess, bows, arrows, tourn] = await Promise.all([
@@ -25,6 +30,11 @@ export default function Dashboard() {
     setSessions(sess);
     setGearCount(bows.length + arrows.length);
     setTournaments(tourn);
+    const prefs = await getDashboardPrefs();
+    if (prefs) {
+      setCardOrder(prefs.order.length > 0 ? prefs.order : DEFAULT_ORDER);
+      setHiddenCards(prefs.hidden);
+    }
   }, []);
 
   useFocusEffect(useCallback(() => { loadData(); }, [loadData]));
@@ -132,188 +142,33 @@ export default function Dashboard() {
         </AnimatedEntry>
       )}
 
-      {/* Live Scorer Hero Button */}
+      {/* Customizable Quick Actions */}
       <AnimatedEntry delay={170}>
-        <TouchableOpacity style={styles.targetMapBtn} onPress={() => router.push('/rounds')} activeOpacity={0.8}>
-          <LinearGradient
-            colors={['#1A0A0A', '#0A0A1A', '#0A1A0A'] as [string, string, string]}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-            style={styles.targetMapGradient}
-          >
-            <View style={styles.targetMapLeft}>
-              <View style={[styles.targetMapIconWrap, { backgroundColor: '#00AA0025' }]}>
-                <Ionicons name="trophy" size={32} color="#00AA00" />
-              </View>
-              <View>
-                <Text style={[styles.targetMapTitle, { color: '#00AA00' }]}>LIVE SCORER</Text>
-                <Text style={styles.targetMapSub}>ASA / IBO round scoring with your group</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#00AA00" />
-          </LinearGradient>
-        </TouchableOpacity>
-      </AnimatedEntry>
-
-      {/* Target Map Hero Button */}
-      <AnimatedEntry delay={180}>
-        <TouchableOpacity style={styles.targetMapBtn} onPress={() => router.push('/target-map')} activeOpacity={0.8}>
-          <LinearGradient
-            colors={['#1A0A0A', '#0A1A0F', '#0A0A1A'] as [string, string, string]}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-            style={styles.targetMapGradient}
-          >
-            <View style={styles.targetMapLeft}>
-              <View style={styles.targetMapIconWrap}>
-                <Ionicons name="aperture" size={32} color={colors.primary} />
-              </View>
-              <View>
-                <Text style={styles.targetMapTitle}>TARGET MAP</Text>
-                <Text style={styles.targetMapSub}>Tap arrows on target + AI group analysis</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.primary} />
-          </LinearGradient>
-        </TouchableOpacity>
-      </AnimatedEntry>
-
-      {/* Quick Actions */}
-      <AnimatedEntry delay={200}>
-        <Text style={styles.sectionTitle}>QUICK ACTIONS</Text>
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionTitle}>QUICK ACTIONS</Text>
+          <TouchableOpacity onPress={() => router.push('/customize')} style={styles.customizeBtn}>
+            <Ionicons name="options" size={14} color={colors.secondary} />
+            <Text style={styles.customizeBtnText}>Customize</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.actionsGrid}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/shot-detail')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={[colors.primary + '20', colors.primary + '05'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="add-circle" size={32} color={colors.primary} />
-              <Text style={[styles.actionText, { color: colors.primary }]}>Log Shots</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/session-detail')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={[colors.secondary + '20', colors.secondary + '05'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="play-circle" size={32} color={colors.secondary} />
-              <Text style={[styles.actionText, { color: colors.secondary }]}>New Session</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/gear' as any)}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={[colors.primary + '15', colors.secondary + '05'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="fitness" size={32} color={colors.primary} />
-              <Text style={[styles.actionText, { color: colors.primary }]}>
-                Gear {gearCount > 0 ? `(${gearCount})` : ''}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/analytics')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={[colors.secondary + '15', colors.primary + '05'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="bar-chart" size={32} color={colors.secondary} />
-              <Text style={[styles.actionText, { color: colors.secondary }]}>Analytics</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/tournaments')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={['#FFB80020', '#FFB80005'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="trophy" size={32} color="#FFB800" />
-              <Text style={[styles.actionText, { color: '#FFB800' }]}>
-                Tournaments {tournaments.length > 0 ? `(${tournaments.length})` : ''}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/stabilizer-test')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={['#FF8C0020', '#FF8C0005'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="flask" size={32} color="#FF8C00" />
-              <Text style={[styles.actionText, { color: '#FF8C00' }]}>Stab Lab</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/targets-3d')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={['#8B452620', '#8B452605'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="paw" size={32} color="#8B4526" />
-              <Text style={[styles.actionText, { color: '#8B4526' }]}>3D Targets</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/forum')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={['#9B59B620', '#9B59B605'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="chatbubbles" size={32} color="#9B59B6" />
-              <Text style={[styles.actionText, { color: '#9B59B6' }]}>Forum</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/experts')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={['#E74C3C20', '#E74C3C05'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="people" size={32} color="#E74C3C" />
-              <Text style={[styles.actionText, { color: '#E74C3C' }]}>Ask Experts</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/profile')}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={[colors.text + '10', colors.text + '02'] as [string, string]}
-              style={styles.actionGradient}
-            >
-              <Ionicons name="person-circle" size={32} color={colors.text} />
-              <Text style={[styles.actionText, { color: colors.text }]}>My Profile</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+          {cardOrder
+            .filter((id) => !hiddenCards.includes(id))
+            .map((id) => {
+              const card = ALL_DASHBOARD_CARDS.find((c) => c.id === id);
+              if (!card) return null;
+              return (
+                <TouchableOpacity key={card.id} style={styles.actionCard}
+                  onPress={() => router.push(card.route as any)} activeOpacity={0.7}>
+                  <LinearGradient
+                    colors={[card.color + '20', card.color + '05'] as [string, string]}
+                    style={styles.actionGradient}>
+                    <Ionicons name={card.icon as any} size={32} color={card.color} />
+                    <Text style={[styles.actionText, { color: card.color }]}>{card.label}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              );
+            })}
         </View>
       </AnimatedEntry>
 
@@ -369,6 +224,12 @@ export default function Dashboard() {
           </View>
         </AnimatedEntry>
       )}
+
+      {/* Admin link (subtle) */}
+      <TouchableOpacity style={styles.adminLink} onPress={() => router.push('/admin')}>
+        <Ionicons name="pulse" size={12} color={colors.textMuted} />
+        <Text style={styles.adminLinkText}>Admin Analytics</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -457,6 +318,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     marginTop: spacing.md,
   },
+  sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.md, marginBottom: spacing.sm },
+  customizeBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.secondary },
+  adminLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: spacing.lg, marginTop: spacing.md },
+  adminLinkText: { fontSize: fontSize.xs, color: colors.textMuted },
+  customizeBtnText: { fontSize: fontSize.xs, fontWeight: '700', color: colors.secondary },
   targetMapBtn: { borderRadius: borderRadius.md, overflow: 'hidden', borderWidth: 1, borderColor: colors.primary + '40', marginBottom: spacing.md },
   targetMapGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md },
   targetMapLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },

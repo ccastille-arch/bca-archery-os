@@ -7,6 +7,7 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import TargetFace, { type TargetType } from '../components/TargetFace';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { analyzeGroup, type ArrowImpact, type GroupAnalysis } from '../lib/ballistics';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 const TARGET_TYPES: { key: TargetType; label: string; radius: number }[] = [
   { key: 'vegas-3spot', label: 'Vegas 3-Spot', radius: 6 },
@@ -26,6 +27,7 @@ interface EndData {
 }
 
 export default function TargetMapScreen() {
+  useScreenTracking('target-map');
   const router = useRouter();
   const [targetType, setTargetType] = useState<TargetType>('vegas-3spot');
   const [arrowsPerEnd, setArrowsPerEnd] = useState(3);

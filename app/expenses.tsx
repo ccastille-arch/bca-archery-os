@@ -7,10 +7,12 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getExpenses, getBowConfigs, getArrowConfigs } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { Expense, BowConfig, ArrowConfig } from '../lib/types';
 import { EXPENSE_CATEGORIES } from '../lib/types';
 
 export default function ExpensesScreen() {
+  useScreenTracking('expenses');
   const router = useRouter();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [bows, setBows] = useState<BowConfig[]>([]);

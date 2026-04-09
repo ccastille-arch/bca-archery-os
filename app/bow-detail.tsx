@@ -10,6 +10,8 @@ import uuid from 'react-native-uuid';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getBowConfigs, saveBowConfig, deleteBowConfig } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { BowConfig, StabilizerBar } from '../lib/types';
 
 const BOW_TYPES = ['compound', 'recurve', 'traditional', 'crossbow'] as const;
@@ -64,6 +66,7 @@ function StabBarInput({ bar, onChange, onRemove, label, showAngle }: {
 }
 
 export default function BowDetailScreen() {
+  useScreenTracking('bow-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
@@ -104,6 +107,7 @@ export default function BowDetailScreen() {
       createdAt: new Date().toISOString(),
     };
     await saveBowConfig(config);
+    trackEvent('bow_saved');
     router.back();
   };
 

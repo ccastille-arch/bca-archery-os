@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getShots } from '../lib/storage';
 import StatCard from '../components/StatCard';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { ShotEnd } from '../lib/types';
 
 const screenWidth = Dimensions.get('window').width - spacing.md * 2;
@@ -28,6 +29,7 @@ const chartConfig = {
 };
 
 export default function AnalyticsScreen() {
+  useScreenTracking('analytics');
   const [shots, setShots] = useState<ShotEnd[]>([]);
 
   useFocusEffect(

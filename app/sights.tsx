@@ -6,9 +6,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getSightProfiles } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { SightProfile } from '../lib/types';
 
 export default function SightsScreen() {
+  useScreenTracking('sights');
   const router = useRouter();
   const [profiles, setProfiles] = useState<SightProfile[]>([]);
 

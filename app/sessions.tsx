@@ -7,9 +7,11 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getSessions, getBowConfigs, getArrowConfigs } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { Session, BowConfig, ArrowConfig } from '../lib/types';
 
 export default function SessionsScreen() {
+  useScreenTracking('sessions');
   const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [bows, setBows] = useState<BowConfig[]>([]);

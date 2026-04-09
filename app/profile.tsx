@@ -15,9 +15,11 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getShots, getSessions } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { Profile } from '../lib/types';
 
 export default function ProfileScreen() {
+  useScreenTracking('profile');
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);

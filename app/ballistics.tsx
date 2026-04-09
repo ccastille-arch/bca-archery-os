@@ -6,8 +6,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { calculateBallistics, type BallisticsResult } from '../lib/ballistics';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 export default function BallisticsScreen() {
+  useScreenTracking('ballistics');
   const [speed, setSpeed] = useState('280');
   const [weight, setWeight] = useState('400');
   const [foc, setFoc] = useState('11');

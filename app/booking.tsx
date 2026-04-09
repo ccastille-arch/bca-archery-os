@@ -12,6 +12,7 @@ import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
 import type { Expert } from '../lib/types';
 import { useFocusEffect } from 'expo-router';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 const DURATION_OPTIONS = [
   { label: '30 min', value: 30 },
@@ -19,6 +20,7 @@ const DURATION_OPTIONS = [
 ];
 
 export default function BookingScreen() {
+  useScreenTracking('booking');
   const router = useRouter();
   const { expertId, type } = useLocalSearchParams<{ expertId: string; type: 'live' | 'message' }>();
   const [expert, setExpert] = useState<Expert | null>(null);

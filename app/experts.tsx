@@ -10,6 +10,7 @@ import AnimatedEntry from '../components/AnimatedEntry';
 import type { Expert } from '../lib/types';
 import { EXPERT_SPECIALTIES } from '../lib/types';
 import { useFocusEffect } from 'expo-router';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 const AVAILABILITY_FILTERS = ['All', 'Available Now', 'Busy'] as const;
 
@@ -25,6 +26,7 @@ const SPECIALTY_COLORS: string[] = [
 ];
 
 export default function ExpertsScreen() {
+  useScreenTracking('experts');
   const router = useRouter();
   const [experts, setExperts] = useState<Expert[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);

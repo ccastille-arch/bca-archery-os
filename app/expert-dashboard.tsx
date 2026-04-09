@@ -13,6 +13,7 @@ import AnimatedEntry from '../components/AnimatedEntry';
 import type { Expert, Booking } from '../lib/types';
 import { EXPERT_SPECIALTIES } from '../lib/types';
 import { useFocusEffect } from 'expo-router';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 const AVAILABILITY_OPTIONS = ['available', 'busy', 'offline'] as const;
 
@@ -34,6 +35,7 @@ const SPECIALTY_COLORS: string[] = [
 ];
 
 export default function ExpertDashboardScreen() {
+  useScreenTracking('expert-dashboard');
   const router = useRouter();
   const [expert, setExpert] = useState<Expert | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);

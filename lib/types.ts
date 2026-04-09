@@ -315,6 +315,57 @@ export interface Tournament {
   notes: string;
 }
 
+// ==================== SWAP SHOP ====================
+
+export interface SwapListing {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  condition: 'new' | 'like-new' | 'good' | 'fair' | 'parts';
+  category: string;
+  imageUrls: string[];
+  author: string;
+  location: string;
+  sold: boolean;
+  createdAt: string;
+}
+
+export const SWAP_CATEGORIES = [
+  'Complete Bows',
+  'Sights & Scopes',
+  'Stabilizers',
+  'Release Aids',
+  'Arrows',
+  'Rest & Accessories',
+  'Strings & Cables',
+  'Targets',
+  'Broadheads',
+  'Clothing / Gear',
+  'Other',
+] as const;
+
+// ==================== FEEDBACK ====================
+
+export type FeedbackType = 'bug' | 'recommendation' | 'feature-request';
+
+export interface FeedbackItem {
+  id: string;
+  type: FeedbackType;
+  subject: string;
+  body: string;
+  author: string;
+  status: 'new' | 'reviewed' | 'resolved';
+  adminReply?: string;
+  createdAt: string;
+}
+
+export const FEEDBACK_TYPE_LABELS: Record<FeedbackType, { label: string; icon: string; color: string }> = {
+  'bug': { label: 'Report a Bug', icon: 'bug', color: '#FF4444' },
+  'recommendation': { label: 'Recommendation', icon: 'bulb', color: '#FFB800' },
+  'feature-request': { label: 'Request a Feature', icon: 'rocket', color: '#9B59B6' },
+};
+
 // ==================== PRACTICE LOG ====================
 
 export interface PracticeLog {

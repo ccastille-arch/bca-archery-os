@@ -7,9 +7,11 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getPracticeLogs, getBowConfigs, getArrowConfigs } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { PracticeLog, BowConfig, ArrowConfig } from '../lib/types';
 
 export default function PracticesScreen() {
+  useScreenTracking('practices');
   const router = useRouter();
   const [practices, setPractices] = useState<PracticeLog[]>([]);
   const [bows, setBows] = useState<BowConfig[]>([]);

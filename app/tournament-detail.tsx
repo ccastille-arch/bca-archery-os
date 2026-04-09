@@ -10,6 +10,7 @@ import uuid from 'react-native-uuid';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getBowConfigs, getArrowConfigs, getTournaments, saveTournament, deleteTournament } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { BowConfig, ArrowConfig, Tournament, RoundFormat, ScoringMode } from '../lib/types';
 import { ROUND_FORMAT_LABELS, SCORING_MODE_LABELS } from '../lib/types';
 
@@ -32,6 +33,7 @@ const emptyForm = () => ({
 });
 
 export default function TournamentDetailScreen() {
+  useScreenTracking('tournament-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;

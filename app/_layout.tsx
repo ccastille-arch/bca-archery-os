@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from '../lib/theme';
+import { trackAppOpen } from '../lib/analytics';
 
 export default function RootLayout() {
+  useEffect(() => { trackAppOpen(); }, []);
   return (
     <>
       <StatusBar style="light" />
@@ -75,6 +78,11 @@ export default function RootLayout() {
         <Tabs.Screen name="score-round" options={{ href: null }} />
         <Tabs.Screen name="score-live" options={{ href: null }} />
         <Tabs.Screen name="targets-3d" options={{ href: null }} />
+        <Tabs.Screen name="admin" options={{ href: null }} />
+        <Tabs.Screen name="feedback" options={{ href: null }} />
+        <Tabs.Screen name="swap-shop" options={{ href: null }} />
+        <Tabs.Screen name="swap-listing" options={{ href: null }} />
+        <Tabs.Screen name="customize" options={{ href: null }} />
       </Tabs>
     </>
   );

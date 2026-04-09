@@ -6,9 +6,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getShots, getBowConfigs, getArrowConfigs } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { ShotEnd, BowConfig, ArrowConfig } from '../lib/types';
 
 export default function ShotsScreen() {
+  useScreenTracking('shots');
   const router = useRouter();
   const [shots, setShots] = useState<ShotEnd[]>([]);
   const [bows, setBows] = useState<BowConfig[]>([]);

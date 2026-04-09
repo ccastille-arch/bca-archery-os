@@ -12,6 +12,8 @@ import { getShots, saveShot, deleteShot } from '../lib/storage';
 import ScoringPad from '../components/ScoringPad';
 import EquipmentPicker from '../components/EquipmentPicker';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { ShotEnd, ScoringMode, RoundFormat } from '../lib/types';
 import { SCORING_MODE_LABELS, ROUND_FORMAT_LABELS, SCORING_VALUES } from '../lib/types';
 
@@ -22,6 +24,7 @@ const ELEVATION_OPTIONS = ['flat', 'uphill', 'downhill', 'treestand'] as const;
 const TARGET_FACES = ['Single Spot', '5-Spot', '3-Spot Vertical', 'FITA 122cm', 'FITA 80cm', 'FITA 40cm', '3D Deer', '3D Elk', '3D Bear', '3D Turkey', '3D Hog', '3D Generic', 'Other'];
 
 export default function ShotDetailScreen() {
+  useScreenTracking('shot-detail');
   const router = useRouter();
   const { id, sessionId } = useLocalSearchParams<{ id?: string; sessionId?: string }>();
   const isEditing = !!id;
@@ -99,6 +102,7 @@ export default function ShotDetailScreen() {
       sessionId: sessionId || undefined, bowConfigId, arrowConfigId,
     };
     await saveShot(shot);
+    trackEvent('shot_logged', { distance: distance, scoringMode });
     router.back();
   };
 

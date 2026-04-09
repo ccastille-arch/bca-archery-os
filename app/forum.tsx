@@ -7,6 +7,7 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getForumPosts } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { LocalForumPost } from '../lib/types';
 import { FORUM_CATEGORIES } from '../lib/types';
 
@@ -32,6 +33,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function ForumScreen() {
+  useScreenTracking('forum');
   const router = useRouter();
   const [posts, setPosts] = useState<LocalForumPost[]>([]);
   const [filter, setFilter] = useState<string>('All');

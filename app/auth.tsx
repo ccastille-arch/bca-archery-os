@@ -16,8 +16,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 export default function AuthScreen() {
+  useScreenTracking('auth');
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);

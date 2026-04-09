@@ -7,10 +7,13 @@ import uuid from 'react-native-uuid';
 import { colors, spacing, fontSize, borderRadius } from '../lib/theme';
 import { saveForumPost, getUserProfile } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import { FORUM_CATEGORIES } from '../lib/types';
 import type { LocalForumPost } from '../lib/types';
 
 export default function ForumNewScreen() {
+  useScreenTracking('forum-new');
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -32,6 +35,7 @@ export default function ForumNewScreen() {
       createdAt: new Date().toISOString(),
     };
     await saveForumPost(post);
+    trackEvent('forum_post_created');
     router.back();
   };
 

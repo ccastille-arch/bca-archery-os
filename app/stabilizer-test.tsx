@@ -10,6 +10,8 @@ import uuid from 'react-native-uuid';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getBowConfigs, getStabilizerTests, saveStabilizerTest, deleteStabilizerTest } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { BowConfig, StabilizerBar, StabilizerTest } from '../lib/types';
 
 const DISTANCES = [20, 30, 40, 50, 60, 70];
@@ -67,6 +69,7 @@ function StabBarInput({ bar, onChange, onRemove, label, showAngle }: {
 }
 
 export default function StabilizerTestScreen() {
+  useScreenTracking('stabilizer-test');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
@@ -131,6 +134,7 @@ export default function StabilizerTestScreen() {
       notes: form.notes,
     };
     await saveStabilizerTest(test);
+    trackEvent('stab_test_logged');
     router.back();
   };
 

@@ -7,6 +7,7 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getTournaments, getBowConfigs } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { Tournament, BowConfig } from '../lib/types';
 import { ROUND_FORMAT_LABELS, SCORING_MODE_LABELS } from '../lib/types';
 
@@ -21,6 +22,7 @@ const ORG_COLORS: Record<string, string> = {
 };
 
 export default function TournamentsScreen() {
+  useScreenTracking('tournaments');
   const router = useRouter();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [bows, setBows] = useState<BowConfig[]>([]);

@@ -7,6 +7,7 @@ import Svg, { Path, Circle, Text as SvgText, Rect, Ellipse, G } from 'react-nati
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { DELTA_MCKENZIE_TARGETS, TARGET_CATEGORIES, BODY_SHAPES, type Target3D } from '../lib/targets3d';
+import { useScreenTracking } from '../lib/useAnalytics';
 
 function Target3DView({ target, size = 240 }: { target: Target3D; size?: number }) {
   const shape = BODY_SHAPES[target.category] || BODY_SHAPES['other'];
@@ -67,6 +68,7 @@ function Target3DView({ target, size = 240 }: { target: Target3D; size?: number 
 }
 
 export default function Targets3DScreen() {
+  useScreenTracking('targets-3d');
   const [category, setCategory] = useState('all');
   const [selectedTarget, setSelectedTarget] = useState<Target3D | null>(null);
 

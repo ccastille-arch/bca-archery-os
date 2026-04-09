@@ -7,9 +7,11 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getLiveRounds } from '../lib/storage';
 import GradientCard from '../components/GradientCard';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
 import type { LiveRound } from '../lib/types';
 
 export default function RoundsScreen() {
+  useScreenTracking('rounds');
   const router = useRouter();
   const [rounds, setRounds] = useState<LiveRound[]>([]);
   const [filter, setFilter] = useState<'all' | 'competition' | 'practice' | 'fun'>('all');

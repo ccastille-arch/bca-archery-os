@@ -11,10 +11,13 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { saveLiveRound } from '../lib/storage';
 import EquipmentPicker from '../components/EquipmentPicker';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { LiveRound, Shooter, RoundMode, ScorerFormat } from '../lib/types';
 import { ASA_CLASSES, IBO_CLASSES } from '../lib/types';
 
 export default function ScoreRoundScreen() {
+  useScreenTracking('score-round');
   const router = useRouter();
 
   // Step 1: Mode & format
@@ -73,6 +76,7 @@ export default function ScoreRoundScreen() {
     };
 
     await saveLiveRound(round);
+    trackEvent('round_started', { format: format, mode: mode });
     router.replace({ pathname: '/score-live', params: { id: round.id } });
   };
 

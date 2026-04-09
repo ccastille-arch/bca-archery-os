@@ -11,10 +11,13 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { getPracticeLogs, savePracticeLog, deletePracticeLog } from '../lib/storage';
 import EquipmentPicker from '../components/EquipmentPicker';
 import AnimatedEntry from '../components/AnimatedEntry';
+import { useScreenTracking } from '../lib/useAnalytics';
+import { trackEvent } from '../lib/analytics';
 import type { PracticeLog } from '../lib/types';
 import { PRACTICE_DRILLS } from '../lib/types';
 
 export default function PracticeDetailScreen() {
+  useScreenTracking('practice-detail');
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
@@ -84,6 +87,7 @@ export default function PracticeDetailScreen() {
     }
 
     await savePracticeLog(practice);
+    trackEvent('practice_logged');
     router.back();
   };
 
