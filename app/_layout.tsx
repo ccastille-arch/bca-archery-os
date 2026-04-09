@@ -22,7 +22,7 @@ export default function RootLayout() {
           },
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.textSecondary,
-          tabBarLabelStyle: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+          tabBarLabelStyle: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
         }}
       >
         <Tabs.Screen name="index" options={{
@@ -37,15 +37,17 @@ export default function RootLayout() {
           title: 'Gear', headerTitle: 'GEAR',
           tabBarIcon: ({ color, size }) => <Ionicons name="fitness" size={size} color={color} />,
         }} />
-        <Tabs.Screen name="sights" options={{
-          title: 'Sights', headerTitle: 'SIGHT BUILDER',
-          tabBarIcon: ({ color, size }) => <Ionicons name="build" size={size} color={color} />,
+        <Tabs.Screen name="practices" options={{
+          title: 'Practice', headerTitle: 'PRACTICE LOG',
+          tabBarIcon: ({ color, size }) => <Ionicons name="calendar" size={size} color={color} />,
         }} />
-        <Tabs.Screen name="sessions" options={{
-          title: 'Sessions', headerTitle: 'SESSIONS',
-          tabBarIcon: ({ color, size }) => <Ionicons name="timer" size={size} color={color} />,
+        <Tabs.Screen name="expenses" options={{
+          title: 'Expenses', headerTitle: 'EXPENSE TRACKER',
+          tabBarIcon: ({ color, size }) => <Ionicons name="cash" size={size} color={color} />,
         }} />
-        {/* Hidden detail screens */}
+        {/* Hidden detail/sub screens */}
+        <Tabs.Screen name="sights" options={{ href: null }} />
+        <Tabs.Screen name="sessions" options={{ href: null }} />
         <Tabs.Screen name="shot-detail" options={{ href: null }} />
         <Tabs.Screen name="analytics" options={{ href: null }} />
         <Tabs.Screen name="session-detail" options={{ href: null }} />
@@ -67,6 +69,8 @@ export default function RootLayout() {
         <Tabs.Screen name="booking" options={{ href: null }} />
         <Tabs.Screen name="target-map" options={{ href: null }} />
         <Tabs.Screen name="ballistics" options={{ href: null }} />
+        <Tabs.Screen name="practice-detail" options={{ href: null }} />
+        <Tabs.Screen name="expense-detail" options={{ href: null }} />
       </Tabs>
     </>
   );

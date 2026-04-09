@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply } from './types';
+import type { ShotEnd, SightProfile, Session, BowConfig, ArrowConfig, StabilizerTest, TuneLog, Tournament, LocalForumPost, LocalForumReply, PracticeLog, Expense } from './types';
 
 const KEYS = {
   SHOTS: '@bca_shots',
@@ -10,6 +10,8 @@ const KEYS = {
   STAB_TESTS: '@bca_stab_tests',
   TUNE_LOGS: '@bca_tune_logs',
   TOURNAMENTS: '@bca_tournaments',
+  PRACTICES: '@bca_practices',
+  EXPENSES: '@bca_expenses',
   FORUM_POSTS: '@bca_forum_posts',
   FORUM_REPLIES: '@bca_forum_replies',
   USER_PROFILE: '@bca_user_profile',
@@ -80,6 +82,32 @@ export const deleteTuneLog = (id: string) => deleteOne<TuneLog>(KEYS.TUNE_LOGS, 
 export const getTournaments = (): Promise<Tournament[]> => getAll<Tournament>(KEYS.TOURNAMENTS);
 export const saveTournament = (t: Tournament) => saveOne(KEYS.TOURNAMENTS, t, getTournaments);
 export const deleteTournament = (id: string) => deleteOne<Tournament>(KEYS.TOURNAMENTS, id, getTournaments);
+
+// Practice Logs
+export const getPracticeLogs = (): Promise<PracticeLog[]> => getAll<PracticeLog>(KEYS.PRACTICES);
+export const savePracticeLog = (p: PracticeLog) => saveOne(KEYS.PRACTICES, p, getPracticeLogs);
+export const deletePracticeLog = (id: string) => deleteOne<PracticeLog>(KEYS.PRACTICES, id, getPracticeLogs);
+
+// Expenses
+export const getExpenses = (): Promise<Expense[]> => getAll<Expense>(KEYS.EXPENSES);
+export const saveExpense = (e: Expense) => saveOne(KEYS.EXPENSES, e, getExpenses);
+export const deleteExpense = (id: string) => deleteOne<Expense>(KEYS.EXPENSES, id, getExpenses);
+
+// Equipment shot count calculator
+export async function getEquipmentShotCounts(): Promise<{ bows: Record<string, number>; arrows: Record<string, number> }> {
+  const shots = await getShots();
+  const bows: Record<string, number> = {};
+  const arrows: Record<string, number> = {};
+  for (const shot of shots) {
+    if (shot.bowConfigId) {
+      bows[shot.bowConfigId] = (bows[shot.bowConfigId] || 0) + shot.arrowCount;
+    }
+    if (shot.arrowConfigId) {
+      arrows[shot.arrowConfigId] = (arrows[shot.arrowConfigId] || 0) + shot.arrowCount;
+    }
+  }
+  return { bows, arrows };
+}
 
 // Forum Posts (local)
 export const getForumPosts = (): Promise<LocalForumPost[]> => getAll<LocalForumPost>(KEYS.FORUM_POSTS);

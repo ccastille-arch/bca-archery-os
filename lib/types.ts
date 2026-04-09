@@ -104,6 +104,25 @@ export interface BowConfig {
   backBars: StabilizerBar[];
   sideRods: StabilizerBar[];
   vBarSetup: string;
+  // Measured specs (actual measurements, not manufacturer)
+  measuredSpecs: {
+    actualATA: string;          // actual axle-to-axle
+    actualBraceHeight: string;  // actual brace height
+    actualDrawWeight: string;   // scale-measured draw weight
+    actualDrawLength: string;   // measured draw length
+    tillerTop: string;          // tiller measurement top
+    tillerBottom: string;       // tiller measurement bottom
+    peepHeight: string;         // peep to arrow center
+    eyeToPeep: string;          // eye to peep distance
+    nockingPoint: string;       // nocking point position
+    dLoopLength: string;        // d-loop measured length
+    centerShot: string;         // center shot measurement
+    arrowSpeed: string;         // chronograph speed
+    letOffMeasured: string;     // actual measured let-off
+    totalBowWeight: string;     // total weight with accessories
+  };
+  // Running stats (auto-calculated)
+  totalShotCount?: number;
   // Meta
   notes: string;
   createdAt: string;
@@ -125,6 +144,7 @@ export interface ArrowConfig {
   foc: string;
   wrapType: string;
   arrowCount: number;
+  totalShotCount?: number;
   notes: string;
   createdAt: string;
 }
@@ -245,6 +265,74 @@ export interface Tournament {
   arrowConfigId?: string;
   notes: string;
 }
+
+// ==================== PRACTICE LOG ====================
+
+export interface PracticeLog {
+  id: string;
+  date: string;
+  duration: number;         // minutes
+  bowConfigId?: string;
+  arrowConfigId?: string;
+  totalArrows: number;
+  drills: string[];         // e.g., "blank bale", "back tension", "shot process"
+  goals: string;
+  notes: string;
+  rating: number;           // 1-5 how productive
+  conditions: string;       // "indoor", "outdoor windy", etc.
+}
+
+export const PRACTICE_DRILLS = [
+  'Blank Bale',
+  'Back Tension',
+  'Shot Process',
+  'Aiming Drills',
+  'Distance Work',
+  'Short Game (20 & in)',
+  'Long Range (50+)',
+  'Uphill/Downhill',
+  'Treestand Practice',
+  'Speed Round',
+  'Pressure Simulation',
+  'Form Video',
+  'Broadhead Tuning',
+  'Walk-Back Tune',
+  'Group Testing',
+] as const;
+
+// ==================== EXPENSE TRACKER ====================
+
+export interface Expense {
+  id: string;
+  date: string;
+  amount: number;
+  category: string;
+  description: string;
+  vendor: string;
+  receiptUrl?: string;      // photo URI or URL
+  bowConfigId?: string;
+  arrowConfigId?: string;
+  notes: string;
+}
+
+export const EXPENSE_CATEGORIES = [
+  'Bow',
+  'Arrows',
+  'Sights & Scopes',
+  'Stabilizers',
+  'Release Aids',
+  'Strings & Cables',
+  'Rest & Accessories',
+  'Targets',
+  'Range Fees',
+  'Tournament Entry',
+  'Travel',
+  'Clothing / Gear',
+  'Broadheads',
+  'Maintenance',
+  'Coaching',
+  'Other',
+] as const;
 
 // ==================== LOCAL FORUM ====================
 

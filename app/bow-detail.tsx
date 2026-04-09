@@ -16,6 +16,13 @@ const BOW_TYPES = ['compound', 'recurve', 'traditional', 'crossbow'] as const;
 
 const emptyStabBar = (): StabilizerBar => ({ brand: '', model: '', length: '', weight: '', angle: '' });
 
+const emptyMeasured = () => ({
+  actualATA: '', actualBraceHeight: '', actualDrawWeight: '', actualDrawLength: '',
+  tillerTop: '', tillerBottom: '', peepHeight: '', eyeToPeep: '',
+  nockingPoint: '', dLoopLength: '', centerShot: '', arrowSpeed: '',
+  letOffMeasured: '', totalBowWeight: '',
+});
+
 const emptyBow = (): Omit<BowConfig, 'id' | 'createdAt'> => ({
   name: '', bowType: 'compound', bowModel: '', drawWeight: '', drawLength: '',
   axleToAxle: '', braceHeight: '', letOff: '', camType: '',
@@ -24,7 +31,7 @@ const emptyBow = (): Omit<BowConfig, 'id' | 'createdAt'> => ({
   frontStabilizer: emptyStabBar(),
   backBars: [emptyStabBar()],
   sideRods: [],
-  vBarSetup: '', notes: '',
+  vBarSetup: '', measuredSpecs: emptyMeasured(), notes: '',
 });
 
 function StabBarInput({ bar, onChange, onRemove, label, showAngle }: {
@@ -61,7 +68,7 @@ export default function BowDetailScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
   const [form, setForm] = useState(emptyBow());
-  const [section, setSection] = useState<'basic' | 'specs' | 'accessories' | 'stabilizers' | 'string'>('basic');
+  const [section, setSection] = useState<'basic' | 'specs' | 'accessories' | 'stabilizers' | 'string' | 'measured'>('basic');
 
   useEffect(() => {
     if (id) {
@@ -79,7 +86,7 @@ export default function BowDetailScreen() {
             frontStabilizer: cfg.frontStabilizer || emptyStabBar(),
             backBars: cfg.backBars?.length ? cfg.backBars : [emptyStabBar()],
             sideRods: cfg.sideRods || [],
-            vBarSetup: cfg.vBarSetup || '', notes: cfg.notes,
+            vBarSetup: cfg.vBarSetup || '', measuredSpecs: cfg.measuredSpecs || emptyMeasured(), notes: cfg.notes,
           });
         }
       });
@@ -114,6 +121,7 @@ export default function BowDetailScreen() {
     { key: 'accessories' as const, label: 'ACCESSORIES', icon: 'construct' },
     { key: 'stabilizers' as const, label: 'STABILIZERS', icon: 'git-branch' },
     { key: 'string' as const, label: 'STRING', icon: 'remove' },
+    { key: 'measured' as const, label: 'MEASURED', icon: 'ruler' },
   ];
 
   const Field = ({ label, value, onChange, placeholder, kbType }: {
@@ -227,6 +235,40 @@ export default function BowDetailScreen() {
               <Field label="STRING BRAND" value={form.stringBrand} onChange={(t) => update({ stringBrand: t })} placeholder="e.g., Winner's Choice" />
               <Field label="STRING MATERIAL" value={form.stringMaterial} onChange={(t) => update({ stringMaterial: t })} placeholder="e.g., BCY X / 452X" />
               <Field label="NOTES" value={form.notes} onChange={(t) => update({ notes: t })} placeholder="Any additional notes..." />
+            </AnimatedEntry>
+          )}
+
+          {section === 'measured' && (
+            <AnimatedEntry>
+              <Text style={[styles.sectionLabel, { color: colors.warning }]}>ACTUAL MEASUREMENTS (not manufacturer specs)</Text>
+              <Field label="ACTUAL ATA (Axle-to-Axle)" value={form.measuredSpecs.actualATA}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, actualATA: t } })} placeholder='e.g., 32 15/16"' />
+              <Field label="ACTUAL BRACE HEIGHT" value={form.measuredSpecs.actualBraceHeight}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, actualBraceHeight: t } })} placeholder='e.g., 6 3/4"' />
+              <Field label="ACTUAL DRAW WEIGHT (scale)" value={form.measuredSpecs.actualDrawWeight}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, actualDrawWeight: t } })} placeholder="e.g., 51.2 lbs" />
+              <Field label="ACTUAL DRAW LENGTH" value={form.measuredSpecs.actualDrawLength}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, actualDrawLength: t } })} placeholder='e.g., 29 1/8"' />
+              <Field label="TILLER (TOP)" value={form.measuredSpecs.tillerTop}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, tillerTop: t } })} placeholder='e.g., 7 1/4"' />
+              <Field label="TILLER (BOTTOM)" value={form.measuredSpecs.tillerBottom}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, tillerBottom: t } })} placeholder='e.g., 7 3/8"' />
+              <Field label="PEEP HEIGHT (peep to arrow center)" value={form.measuredSpecs.peepHeight}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, peepHeight: t } })} placeholder='e.g., 4 3/4"' />
+              <Field label="EYE TO PEEP CENTER" value={form.measuredSpecs.eyeToPeep}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, eyeToPeep: t } })} placeholder='e.g., 3 1/2"' />
+              <Field label="NOCKING POINT" value={form.measuredSpecs.nockingPoint}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, nockingPoint: t } })} placeholder='e.g., 1/16" high' />
+              <Field label="D-LOOP LENGTH" value={form.measuredSpecs.dLoopLength}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, dLoopLength: t } })} placeholder='e.g., 1/2"' />
+              <Field label="CENTER SHOT" value={form.measuredSpecs.centerShot}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, centerShot: t } })} placeholder='e.g., 13/16" from riser' />
+              <Field label="ARROW SPEED (chronograph)" value={form.measuredSpecs.arrowSpeed}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, arrowSpeed: t } })} placeholder="e.g., 278 fps" />
+              <Field label="ACTUAL LET-OFF" value={form.measuredSpecs.letOffMeasured}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, letOffMeasured: t } })} placeholder="e.g., 82%" />
+              <Field label="TOTAL BOW WEIGHT (with accessories)" value={form.measuredSpecs.totalBowWeight}
+                onChange={(t) => update({ measuredSpecs: { ...form.measuredSpecs, totalBowWeight: t } })} placeholder="e.g., 5.8 lbs" />
             </AnimatedEntry>
           )}
 
