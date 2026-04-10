@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { getShots, getSessions, getBowConfigs, getArrowConfigs, getTournaments, getDashboardPrefs, getCurrentUser, logout } from '../lib/storage';
+import { getOnboardingComplete } from '../lib/settings';
+import DashboardSkeleton from '../components/DashboardSkeleton';
 import type { AppUser } from '../lib/types';
 import AnimatedEntry from '../components/AnimatedEntry';
 import GradientCard from '../components/GradientCard';
@@ -25,16 +27,22 @@ export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Auth gate — redirect to login if not logged in
+  // Auth gate + onboarding check
   useFocusEffect(useCallback(() => {
-    getCurrentUser().then((u) => {
+    (async () => {
+      const u = await getCurrentUser();
       if (!u) {
         router.replace('/login');
-      } else {
-        setCurrentUser(u);
-        setAuthChecked(true);
+        return;
       }
-    });
+      setCurrentUser(u);
+      const onboarded = await getOnboardingComplete();
+      if (!onboarded) {
+        router.replace('/onboarding');
+        return;
+      }
+      setAuthChecked(true);
+    })();
   }, []));
 
   const loadData = useCallback(async () => {
@@ -80,6 +88,10 @@ export default function Dashboard() {
   }
 
   const recentShots = shots.slice(0, 5);
+
+  if (!authChecked) {
+    return <View style={styles.container}><DashboardSkeleton /></View>;
+  }
 
   return (
     <ScrollView
@@ -271,6 +283,10 @@ export default function Dashboard() {
 
       {/* Account actions */}
       <View style={styles.accountActions}>
+        <TouchableOpacity style={styles.accountBtn} onPress={() => router.push('/settings')}>
+          <Ionicons name="settings-outline" size={14} color={colors.primary} />
+          <Text style={[styles.accountBtnText, { color: colors.primary }]}>Settings</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.accountBtn} onPress={() => router.push('/change-password')}>
           <Ionicons name="key" size={14} color={colors.secondary} />
           <Text style={[styles.accountBtnText, { color: colors.secondary }]}>Change Password</Text>

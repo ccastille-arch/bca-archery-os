@@ -2,7 +2,8 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef } from 'react';
 import { Animated } from 'react-native';
-import { colors, gradients, spacing, borderRadius } from '../lib/theme';
+import { colors, gradients, spacing, borderRadius, animation } from '../lib/theme';
+import { hapticLight } from '../lib/haptics';
 
 interface Props {
   children: React.ReactNode;
@@ -15,11 +16,11 @@ export default function GradientCard({ children, onPress, accentColors, style }:
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
+    hapticLight();
     Animated.spring(scaleAnim, {
       toValue: 0.97,
       useNativeDriver: true,
-      speed: 50,
-      bounciness: 4,
+      ...animation.spring,
     }).start();
   };
 

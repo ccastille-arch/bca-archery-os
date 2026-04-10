@@ -8,6 +8,7 @@ import { getLiveRounds, saveLiveRound } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { useScreenTracking } from '../lib/useAnalytics';
 import { trackEvent } from '../lib/analytics';
+import { hapticMedium } from '../lib/haptics';
 import type { LiveRound } from '../lib/types';
 import { ASA_SCORE_VALUES, IBO_SCORE_VALUES } from '../lib/types';
 
@@ -94,6 +95,7 @@ export default function ScoreLiveScreen() {
       updatedRound.targets.push(target);
     }
     target.scores[currentShooter.id] = value;
+    hapticMedium();
 
     setRound(updatedRound);
     await saveLiveRound(updatedRound);

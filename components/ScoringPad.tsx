@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { colors, fontSize, borderRadius, spacing } from '../lib/theme';
+import { colors, fontSize, borderRadius, spacing, animation } from '../lib/theme';
+import { hapticMedium } from '../lib/haptics';
 import type { ScoringMode } from '../lib/types';
 import { SCORING_VALUES } from '../lib/types';
 
@@ -97,9 +98,10 @@ function ScoreButton({ value, label, selected, colorFn, index, onPress }: {
   const ringColor = colorFn(value, index);
 
   const handlePress = () => {
+    hapticMedium();
     Animated.sequence([
-      Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
-      Animated.spring(scaleAnim, { toValue: selected ? 1.1 : 1, useNativeDriver: true, speed: 50, bounciness: 12 }),
+      Animated.timing(scaleAnim, { toValue: 1.2, duration: animation.duration.fast / 2, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: selected ? 1.1 : 1, useNativeDriver: true, ...animation.springBouncy }),
     ]).start();
     onPress();
   };

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Stack, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,6 +7,7 @@ import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme
 import { login, seedAdminAccount, getCurrentUser } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { trackEvent } from '../lib/analytics';
+import { hapticSuccess, hapticError } from '../lib/haptics';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -33,10 +34,11 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (user) {
+      hapticSuccess();
       trackEvent('user_login', { role: user.role, username: user.username });
-      // Navigate to dashboard
       router.replace('/');
     } else {
+      hapticError();
       Alert.alert('Login Failed', 'Invalid username or password. Check your credentials and try again.');
     }
   };
@@ -85,7 +87,7 @@ export default function LoginScreen() {
               <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
                 start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.loginBtnGradient}>
                 {loading ? (
-                  <Text style={styles.loginBtnText}>LOGGING IN...</Text>
+                  <><ActivityIndicator size="small" color={colors.background} /><Text style={styles.loginBtnText}>LOGGING IN...</Text></>
                 ) : (
                   <>
                     <Ionicons name="log-in" size={20} color={colors.background} />
