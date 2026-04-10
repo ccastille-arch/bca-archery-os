@@ -23,6 +23,19 @@ export default function Dashboard() {
   const [cardOrder, setCardOrder] = useState<string[]>(DEFAULT_ORDER);
   const [hiddenCards, setHiddenCards] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // Auth gate — redirect to login if not logged in
+  useFocusEffect(useCallback(() => {
+    getCurrentUser().then((u) => {
+      if (!u) {
+        router.replace('/login');
+      } else {
+        setCurrentUser(u);
+        setAuthChecked(true);
+      }
+    });
+  }, []));
 
   const loadData = useCallback(async () => {
     const [s, sess, bows, arrows, tourn] = await Promise.all([
@@ -32,8 +45,6 @@ export default function Dashboard() {
     setSessions(sess);
     setGearCount(bows.length + arrows.length);
     setTournaments(tourn);
-    const user = await getCurrentUser();
-    setCurrentUser(user);
     const prefs = await getDashboardPrefs();
     if (prefs) {
       setCardOrder(prefs.order.length > 0 ? prefs.order : DEFAULT_ORDER);
@@ -41,7 +52,7 @@ export default function Dashboard() {
     }
   }, []);
 
-  useFocusEffect(useCallback(() => { loadData(); }, [loadData]));
+  useFocusEffect(useCallback(() => { if (authChecked) loadData(); }, [loadData, authChecked]));
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -229,6 +240,13 @@ export default function Dashboard() {
         </AnimatedEntry>
       )}
 
+      {/* What's New */}
+      <TouchableOpacity style={styles.changelogBtn} onPress={() => router.push('/changelog')}>
+        <Ionicons name="newspaper" size={16} color={colors.primary} />
+        <Text style={styles.changelogText}>What's New — Latest Fixes & Features</Text>
+        <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+      </TouchableOpacity>
+
       {/* User bar */}
       <View style={styles.userBar}>
         <Text style={styles.userBarText}>
@@ -357,6 +375,8 @@ const styles = StyleSheet.create({
   adminControls: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md, marginTop: spacing.sm },
   adminBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   adminBtnText: { fontSize: fontSize.xs, fontWeight: '700' },
+  changelogBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.md, marginTop: spacing.lg, borderWidth: 1, borderColor: colors.primary + '30' },
+  changelogText: { flex: 1, fontSize: fontSize.sm, color: colors.text, fontWeight: '600' },
   accountActions: { flexDirection: 'row', justifyContent: 'center', gap: spacing.md, marginTop: spacing.sm, marginBottom: spacing.xl },
   accountBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.full, borderWidth: 1, borderColor: colors.border },
   accountBtnText: { fontSize: fontSize.xs, fontWeight: '700' },

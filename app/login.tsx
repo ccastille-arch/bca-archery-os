@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
-import { login, seedAdminAccount } from '../lib/storage';
+import { login, seedAdminAccount, getCurrentUser } from '../lib/storage';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { trackEvent } from '../lib/analytics';
 
@@ -15,19 +15,26 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // If already logged in, go to dashboard
+  useFocusEffect(useCallback(() => {
+    getCurrentUser().then((u) => {
+      if (u) router.replace('/');
+    });
+  }, []));
+
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert('Missing fields', 'Enter your username and password.');
       return;
     }
     setLoading(true);
-    // Ensure admin exists
     await seedAdminAccount();
-    const user = await login(username.trim(), password);
+    const user = await login(username.trim(), password.trim());
     setLoading(false);
 
     if (user) {
       trackEvent('user_login', { role: user.role, username: user.username });
+      // Navigate to dashboard
       router.replace('/');
     } else {
       Alert.alert('Login Failed', 'Invalid username or password. Check your credentials and try again.');
@@ -36,10 +43,9 @@ export default function LoginScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
+      <Stack.Screen options={{ headerShown: false, tabBarStyle: { display: 'none' } } as any} />
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.inner}>
-          {/* Logo */}
           <AnimatedEntry>
             <LinearGradient colors={[...gradients.heroBg] as [string, string, ...string[]]} style={styles.hero}>
               <Text style={styles.brand}>BCA</Text>
@@ -51,7 +57,6 @@ export default function LoginScreen() {
             </LinearGradient>
           </AnimatedEntry>
 
-          {/* Form */}
           <AnimatedEntry delay={100}>
             <Text style={styles.welcomeText}>Welcome back</Text>
 
@@ -59,21 +64,22 @@ export default function LoginScreen() {
               <Ionicons name="person" size={18} color={colors.textMuted} style={styles.inputIcon} />
               <TextInput style={styles.input} value={username} onChangeText={setUsername}
                 placeholder="Username" placeholderTextColor={colors.textMuted}
-                autoCapitalize="none" autoCorrect={false} />
+                autoCapitalize="none" autoCorrect={false}
+                returnKeyType="next" />
             </View>
 
             <View style={styles.inputWrap}>
               <Ionicons name="lock-closed" size={18} color={colors.textMuted} style={styles.inputIcon} />
               <TextInput style={[styles.input, { flex: 1 }]} value={password} onChangeText={setPassword}
                 placeholder="Password" placeholderTextColor={colors.textMuted}
-                secureTextEntry={!showPassword} autoCapitalize="none" />
+                secureTextEntry={!showPassword} autoCapitalize="none"
+                returnKeyType="go" onSubmitEditing={handleLogin} />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
                 <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
           </AnimatedEntry>
 
-          {/* Login Button */}
           <AnimatedEntry delay={200}>
             <TouchableOpacity style={styles.loginBtn} onPress={handleLogin} disabled={loading}>
               <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
