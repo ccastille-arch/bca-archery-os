@@ -55,39 +55,48 @@ export default function ScoreRoundScreen() {
     setShooters(shooters.filter((_, i) => i !== idx));
   };
 
+  const [starting, setStarting] = useState(false);
+
   const startRound = async () => {
+    if (starting) return;
+    setStarting(true);
+
+    const validShooters = shooters.filter((s) => s.name.trim());
+    if (validShooters.length === 0) {
+      Alert.alert('Add shooters', 'Add at least one shooter with a name.');
+      setStarting(false);
+      return;
+    }
+
+    const roundId = uuid.v4() as string;
+    const round: LiveRound = {
+      id: roundId,
+      date: new Date().toISOString(),
+      mode, format,
+      name: name.trim() || (mode === 'competition' ? 'Competition' : mode === 'practice' ? 'Practice' : 'Fun Round'),
+      rangeAssignment: rangeAssignment.trim(),
+      totalTargets, startingTarget,
+      shooters: validShooters.map((s) => ({ ...s, name: s.name.trim() })),
+      targets: [],
+      completed: false,
+      bowConfigId, arrowConfigId,
+    };
+
     try {
-      const validShooters = shooters.filter((s) => s.name.trim());
-      if (validShooters.length === 0) {
-        Alert.alert('Add shooters', 'Add at least one shooter with a name.');
-        return;
-      }
-
-      const roundId = uuid.v4() as string;
-      const round: LiveRound = {
-        id: roundId,
-        date: new Date().toISOString(),
-        mode, format,
-        name: name.trim() || (mode === 'competition' ? 'Competition' : mode === 'practice' ? 'Practice' : 'Fun Round'),
-        rangeAssignment: rangeAssignment.trim(),
-        totalTargets, startingTarget,
-        shooters: validShooters.map((s) => ({ ...s, name: s.name.trim() })),
-        targets: [],
-        completed: false,
-        bowConfigId, arrowConfigId,
-      };
-
       await saveLiveRound(round);
-      trackEvent('round_started', { format: format, mode: mode });
-
-      // Use direct window.location on web since router.push fails for hidden tab screens
-      if (typeof window !== 'undefined' && window.location) {
-        window.location.href = `/score-live?id=${roundId}`;
-      } else {
-        router.push(`/score-live?id=${roundId}`);
-      }
     } catch (e: any) {
-      Alert.alert('Error', e?.message || 'Failed to start round. Please try again.');
+      Alert.alert('Save Error', 'Could not save round: ' + (e?.message || 'unknown'));
+      setStarting(false);
+      return;
+    }
+
+    trackEvent('round_started', { format: format, mode: mode });
+
+    // Navigate to live scoring
+    if (typeof window !== 'undefined') {
+      window.location.assign('/score-live?id=' + roundId);
+    } else {
+      router.push('/score-live?id=' + roundId);
     }
   };
 
@@ -239,11 +248,11 @@ export default function ScoreRoundScreen() {
                 <Ionicons name="arrow-back" size={18} color={colors.textSecondary} />
                 <Text style={styles.backBtnText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.startRoundBtn} onPress={startRound}>
+              <TouchableOpacity style={styles.startRoundBtn} onPress={startRound} disabled={starting}>
                 <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.startRoundBtnInner}>
-                  <Text style={styles.startRoundBtnText}>START ROUND</Text>
-                  <Ionicons name="play" size={20} color={colors.background} />
+                  <Text style={styles.startRoundBtnText}>{starting ? 'STARTING...' : 'START ROUND'}</Text>
+                  <Ionicons name={starting ? 'hourglass' : 'play'} size={20} color={colors.background} />
                 </LinearGradient>
               </TouchableOpacity>
             </View>
