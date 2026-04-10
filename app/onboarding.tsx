@@ -1,31 +1,47 @@
-import React, { useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
+import { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
 import { setOnboardingComplete } from '../lib/settings';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import AnimatedEntry from '../components/AnimatedEntry';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const TOTAL_PAGES = 3;
+const PAGES = [
+  {
+    title: 'Welcome to BCA',
+    subtitle: 'ARCHERY OS',
+    description: 'The Operating System for Competitive Archers',
+    features: null,
+  },
+  {
+    title: 'Everything You Need',
+    subtitle: null,
+    description: null,
+    features: [
+      { icon: 'locate', label: 'Track Every Arrow', desc: 'Log shots, scores, and conditions' },
+      { icon: 'trophy', label: 'Live Round Scoring', desc: 'ASA/IBO scoring with your group' },
+      { icon: 'fitness', label: 'Manage Your Gear', desc: 'Bows, arrows, stabilizers, tuning' },
+      { icon: 'analytics', label: 'Analyze Performance', desc: 'Group analysis, ballistics, trends' },
+    ],
+  },
+  {
+    title: "You're All Set!",
+    subtitle: null,
+    description: 'Start logging your first shots and see what BCA Archery OS can do.',
+    features: null,
+  },
+];
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(0);
-  const scrollRef = useRef<ScrollView>(null);
+  const [page, setPage] = useState(0);
+  const current = PAGES[page];
 
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const page = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-    setCurrentPage(page);
+  const handleNext = () => {
+    if (page < PAGES.length - 1) {
+      setPage(page + 1);
+    }
   };
 
   const handleGetStarted = async () => {
@@ -33,287 +49,116 @@ export default function OnboardingScreen() {
     router.replace('/');
   };
 
+  const handleSkip = async () => {
+    await setOnboardingComplete();
+    router.replace('/');
+  };
+
   return (
-    <View style={styles.container}>
+    <>
       <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* Skip button */}
+        {page < PAGES.length - 1 && (
+          <TouchableOpacity style={styles.skipBtn} onPress={handleSkip}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+        )}
 
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
-        {/* ==================== SCREEN 1: WELCOME ==================== */}
-        <View style={styles.page}>
-          <View style={styles.pageContent}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoMain}>BCA</Text>
-              <Text style={styles.logoSub}>ARCHERY OS</Text>
-            </View>
-
-            <Text style={styles.tagline}>
-              The Operating System for Competitive Archers
-            </Text>
-
-            <LinearGradient
-              colors={gradients.primaryToSecondary}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.badge}
-            >
-              <Text style={styles.badgeText}>BOW CONTROL ANALYTICS</Text>
-            </LinearGradient>
-          </View>
-        </View>
-
-        {/* ==================== SCREEN 2: FEATURES ==================== */}
-        <View style={styles.page}>
-          <View style={styles.pageContent}>
-            <Text style={styles.featuresTitle}>What You Can Do</Text>
-
-            <View style={styles.featureList}>
-              <View style={styles.featureItem}>
-                <Text style={styles.featureEmoji}>🎯</Text>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureHeading}>Track Every Arrow</Text>
-                  <Text style={styles.featureDesc}>
-                    Log shots, scores, and conditions
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.featureItem}>
-                <Text style={styles.featureEmoji}>🏆</Text>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureHeading}>Live Round Scoring</Text>
-                  <Text style={styles.featureDesc}>
-                    ASA/IBO scoring with your group
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.featureItem}>
-                <Text style={styles.featureEmoji}>🔧</Text>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureHeading}>Manage Your Gear</Text>
-                  <Text style={styles.featureDesc}>
-                    Bows, arrows, stabilizers, tuning
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.featureItem}>
-                <Text style={styles.featureEmoji}>📊</Text>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureHeading}>Analyze Performance</Text>
-                  <Text style={styles.featureDesc}>
-                    Group analysis, ballistics, trends
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* ==================== SCREEN 3: GET STARTED ==================== */}
-        <View style={styles.page}>
-          <View style={styles.pageContent}>
-            <Ionicons
-              name="checkmark-circle"
-              size={80}
-              color={colors.primary}
-              style={{ marginBottom: spacing.lg }}
-            />
-
-            <Text style={styles.readyTitle}>You're all set!</Text>
-            <Text style={styles.readyDesc}>
-              Start logging your first shots and see what BCA Archery OS can do.
-            </Text>
-
-            <TouchableOpacity
-              onPress={handleGetStarted}
-              activeOpacity={0.8}
-              style={{ width: '100%', marginTop: spacing.xl }}
-            >
-              <LinearGradient
-                colors={gradients.primaryToSecondary}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.getStartedButton}
-              >
-                <Text style={styles.getStartedText}>GET STARTED</Text>
-                <Ionicons
-                  name="arrow-forward"
-                  size={22}
-                  color={colors.background}
-                  style={{ marginLeft: spacing.sm }}
-                />
+        {/* Page content */}
+        <AnimatedEntry key={page}>
+          {page === 0 && (
+            <View style={styles.heroSection}>
+              <Text style={styles.brand}>BCA</Text>
+              <Text style={styles.subtitle}>ARCHERY OS</Text>
+              <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
+                start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.badge}>
+                <Text style={styles.badgeText}>BOW CONTROL ANALYTICS</Text>
               </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
+              <Text style={styles.description}>{current.description}</Text>
+            </View>
+          )}
 
-      {/* ==================== PAGE INDICATORS ==================== */}
-      <View style={styles.dotsContainer}>
-        {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.dot,
-              currentPage === i ? styles.dotActive : styles.dotInactive,
-            ]}
-          />
-        ))}
-      </View>
-    </View>
+          {page === 1 && (
+            <View style={styles.featuresSection}>
+              <Text style={styles.pageTitle}>{current.title}</Text>
+              {current.features?.map((f, i) => (
+                <AnimatedEntry key={i} delay={i * 80}>
+                  <View style={styles.featureCard}>
+                    <View style={styles.featureIcon}>
+                      <Ionicons name={f.icon as any} size={28} color={colors.primary} />
+                    </View>
+                    <View style={styles.featureText}>
+                      <Text style={styles.featureLabel}>{f.label}</Text>
+                      <Text style={styles.featureDesc}>{f.desc}</Text>
+                    </View>
+                  </View>
+                </AnimatedEntry>
+              ))}
+            </View>
+          )}
+
+          {page === 2 && (
+            <View style={styles.heroSection}>
+              <Ionicons name="checkmark-circle" size={64} color={colors.primary} />
+              <Text style={styles.pageTitle}>{current.title}</Text>
+              <Text style={styles.description}>{current.description}</Text>
+            </View>
+          )}
+        </AnimatedEntry>
+
+        {/* Page dots */}
+        <View style={styles.dots}>
+          {PAGES.map((_, i) => (
+            <View key={i} style={[styles.dot, i === page && styles.dotActive]} />
+          ))}
+        </View>
+
+        {/* Action button */}
+        {page < PAGES.length - 1 ? (
+          <TouchableOpacity style={styles.actionBtn} onPress={handleNext}>
+            <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnInner}>
+              <Text style={styles.actionBtnText}>NEXT</Text>
+              <Ionicons name="arrow-forward" size={20} color={colors.background} />
+            </LinearGradient>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.actionBtn} onPress={handleGetStarted}>
+            <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnInner}>
+              <Ionicons name="rocket" size={20} color={colors.background} />
+              <Text style={styles.actionBtnText}>GET STARTED</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  page: {
-    width: SCREEN_WIDTH,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pageContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    width: '100%',
-  },
-
-  // Screen 1: Welcome
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  logoMain: {
-    fontSize: 72,
-    fontWeight: '900',
-    color: colors.primary,
-    letterSpacing: 6,
-  },
-  logoSub: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: 4,
-    marginTop: spacing.xs,
-  },
-  tagline: {
-    fontSize: fontSize.lg,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  badge: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-  },
-  badgeText: {
-    fontSize: fontSize.xs,
-    fontWeight: '800',
-    color: colors.background,
-    letterSpacing: 1.5,
-  },
-
-  // Screen 2: Features
-  featuresTitle: {
-    fontSize: fontSize.xxl,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.xl,
-    textAlign: 'center',
-  },
-  featureList: {
-    width: '100%',
-    gap: spacing.lg,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  featureEmoji: {
-    fontSize: 32,
-    marginRight: spacing.md,
-  },
-  featureText: {
-    flex: 1,
-  },
-  featureHeading: {
-    fontSize: fontSize.lg,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  featureDesc: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-
-  // Screen 3: Get Started
-  readyTitle: {
-    fontSize: fontSize.xxl,
-    fontWeight: '800',
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  readyDesc: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  getStartedButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.xl,
-  },
-  getStartedText: {
-    fontSize: fontSize.lg,
-    fontWeight: '800',
-    color: colors.background,
-    letterSpacing: 1.5,
-  },
-
-  // Dots
-  dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: spacing.xxl,
-    gap: spacing.sm,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  dotActive: {
-    backgroundColor: colors.primary,
-  },
-  dotInactive: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.textMuted,
-  },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.xl, paddingTop: 80, paddingBottom: spacing.xxl * 2, justifyContent: 'center', minHeight: '100%' },
+  skipBtn: { position: 'absolute', top: 50, right: spacing.xl, zIndex: 10 },
+  skipText: { fontSize: fontSize.md, color: colors.textSecondary, fontWeight: '600' },
+  heroSection: { alignItems: 'center', paddingVertical: spacing.xxl },
+  brand: { fontSize: fontSize.hero, fontWeight: '900', color: colors.primary, letterSpacing: 8 },
+  subtitle: { fontSize: fontSize.lg, fontWeight: '700', color: colors.text, letterSpacing: 6, marginTop: -4 },
+  badge: { marginTop: spacing.md, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.full },
+  badgeText: { fontSize: fontSize.xs, fontWeight: '800', color: colors.background, letterSpacing: 2 },
+  description: { fontSize: fontSize.md, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.lg, lineHeight: 24 },
+  featuresSection: { paddingVertical: spacing.lg },
+  pageTitle: { fontSize: fontSize.xxl, fontWeight: '900', color: colors.text, textAlign: 'center', marginBottom: spacing.xl },
+  featureCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.md, marginBottom: spacing.sm },
+  featureIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' },
+  featureText: { flex: 1 },
+  featureLabel: { fontSize: fontSize.md, fontWeight: '800', color: colors.text },
+  featureDesc: { fontSize: fontSize.sm, color: colors.textSecondary, marginTop: 2 },
+  dots: { flexDirection: 'row', justifyContent: 'center', gap: spacing.sm, marginVertical: spacing.xl },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.surfaceLight, borderWidth: 1, borderColor: colors.textMuted },
+  dotActive: { backgroundColor: colors.primary, borderColor: colors.primary, width: 24 },
+  actionBtn: { borderRadius: borderRadius.md, overflow: 'hidden' },
+  actionBtnInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, padding: spacing.md },
+  actionBtnText: { fontSize: fontSize.md, fontWeight: '800', color: colors.background, letterSpacing: 2 },
 });
