@@ -342,7 +342,7 @@ export default function Dashboard() {
           <Ionicons name="key" size={14} color={colors.secondary} />
           <Text style={[styles.accountBtnText, { color: colors.secondary }]}>Change Password</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.accountBtn} onPress={async () => { await logout(); router.replace('/login'); }}>
+        <TouchableOpacity style={styles.accountBtn} onPress={async () => { await logout(); router.push('/login'); }}>
           <Ionicons name="log-out" size={14} color={colors.danger} />
           <Text style={[styles.accountBtnText, { color: colors.danger }]}>Log Out</Text>
         </TouchableOpacity>

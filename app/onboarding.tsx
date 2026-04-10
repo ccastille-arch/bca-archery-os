@@ -27,12 +27,12 @@ export default function OnboardingScreen() {
 
   const handleGetStarted = async () => {
     await setOnboardingComplete();
-    router.replace('/');
+    router.push('/');
   };
 
   const handleSkip = async () => {
     await setOnboardingComplete();
-    router.replace('/');
+    router.push('/');
   };
 
   return (

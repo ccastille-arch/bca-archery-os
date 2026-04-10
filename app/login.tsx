@@ -19,7 +19,7 @@ export default function LoginScreen() {
   // If already logged in, go to dashboard
   useFocusEffect(useCallback(() => {
     getCurrentUser().then((u) => {
-      if (u) router.replace('/');
+      if (u) router.push('/');
     });
   }, []));
 
@@ -36,7 +36,7 @@ export default function LoginScreen() {
     if (user) {
       hapticSuccess();
       trackEvent('user_login', { role: user.role, username: user.username });
-      router.replace('/');
+      router.push('/');
     } else {
       hapticError();
       Alert.alert('Login Failed', 'Invalid username or password. Check your credentials and try again.');

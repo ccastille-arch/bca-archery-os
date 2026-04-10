@@ -113,7 +113,7 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      router.replace('/');
+      router.push('/');
     } catch (err: any) {
       Alert.alert('Error', err.message || 'Could not sign out.');
     }

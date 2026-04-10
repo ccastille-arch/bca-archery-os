@@ -48,7 +48,7 @@ export default function AuthScreen() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.replace('/');
+        router.push('/');
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
