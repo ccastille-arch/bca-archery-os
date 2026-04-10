@@ -50,7 +50,7 @@ export default function AdminScreen() {
   } | null>(null);
 
   const loadData = useCallback(async () => {
-    const [s, shots, rounds, bows, arrows, equipCounts, fb] = await Promise.all([
+    const [s, shots, rounds, bows, arrows, equipCounts, fb, ea] = await Promise.all([
       getAnalyticsSummary(), getShots(), getLiveRounds(),
       getBowConfigs(), getArrowConfigs(), getEquipmentShotCounts(), getFeedback(), getExpertApps(),
     ]);
