@@ -56,28 +56,33 @@ export default function ScoreRoundScreen() {
   };
 
   const startRound = async () => {
-    const validShooters = shooters.filter((s) => s.name.trim());
-    if (validShooters.length === 0) {
-      Alert.alert('Add shooters', 'Add at least one shooter with a name.');
-      return;
+    try {
+      const validShooters = shooters.filter((s) => s.name.trim());
+      if (validShooters.length === 0) {
+        Alert.alert('Add shooters', 'Add at least one shooter with a name.');
+        return;
+      }
+
+      const roundId = uuid.v4() as string;
+      const round: LiveRound = {
+        id: roundId,
+        date: new Date().toISOString(),
+        mode, format,
+        name: name.trim() || (mode === 'competition' ? 'Competition' : mode === 'practice' ? 'Practice' : 'Fun Round'),
+        rangeAssignment: rangeAssignment.trim(),
+        totalTargets, startingTarget,
+        shooters: validShooters.map((s) => ({ ...s, name: s.name.trim() })),
+        targets: [],
+        completed: false,
+        bowConfigId, arrowConfigId,
+      };
+
+      await saveLiveRound(round);
+      trackEvent('round_started', { format: format, mode: mode });
+      router.push(`/score-live?id=${roundId}`);
+    } catch (e: any) {
+      Alert.alert('Error', e?.message || 'Failed to start round. Please try again.');
     }
-
-    const round: LiveRound = {
-      id: uuid.v4() as string,
-      date: new Date().toISOString(),
-      mode, format,
-      name: name.trim() || (mode === 'competition' ? 'Competition' : mode === 'practice' ? 'Practice' : 'Fun Round'),
-      rangeAssignment: rangeAssignment.trim(),
-      totalTargets, startingTarget,
-      shooters: validShooters.map((s) => ({ ...s, name: s.name.trim() })),
-      targets: [],
-      completed: false,
-      bowConfigId, arrowConfigId,
-    };
-
-    await saveLiveRound(round);
-    trackEvent('round_started', { format: format, mode: mode });
-    router.push({ pathname: '/score-live', params: { id: round.id } });
   };
 
   return (
