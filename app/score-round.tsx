@@ -77,7 +77,7 @@ export default function ScoreRoundScreen() {
 
     await saveLiveRound(round);
     trackEvent('round_started', { format: format, mode: mode });
-    router.replace({ pathname: '/score-live', params: { id: round.id } });
+    router.push({ pathname: '/score-live', params: { id: round.id } });
   };
 
   return (

@@ -150,7 +150,7 @@ export default function ScoreLiveScreen() {
       { text: 'Finish', onPress: async () => {
         const updated = { ...round, completed: true };
         await saveLiveRound(updated);
-        router.replace('/rounds');
+        router.push('/rounds');
       }},
     ]);
   };
