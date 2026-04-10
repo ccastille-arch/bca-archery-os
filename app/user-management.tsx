@@ -116,7 +116,8 @@ export default function UserManagementScreen() {
 
     // Send via SMS directly using sms: URL scheme
     const cleanPhone = invitePhone.trim().replace(/[^0-9+]/g, '');
-    const message = `Hey ${inviteName.trim()}! You've been invited to BCA Archery OS. Open: ${APP_URL} | Username: ${username} | Password: ${password}`;
+    const inviteLink = `${APP_URL}/login?u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}&n=${encodeURIComponent(inviteName.trim())}`;
+    const message = `Hey ${inviteName.trim()}! You've been invited to BCA Archery OS.\n\nOpen this link: ${inviteLink}\n\nOr go to ${APP_URL} and log in with:\nUsername: ${username}\nPassword: ${password}`;
     const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
 
     try {

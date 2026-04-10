@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Stack, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, fontSize, borderRadius } from '../lib/theme';
-import { login, seedAdminAccount, getCurrentUser } from '../lib/storage';
+import { login, seedAdminAccount, getCurrentUser, createUser, getAllUsers } from '../lib/storage';
+import type { AppUser } from '../lib/types';
+import uuid from 'react-native-uuid';
 import AnimatedEntry from '../components/AnimatedEntry';
 import { trackEvent } from '../lib/analytics';
 import { hapticSuccess, hapticError } from '../lib/haptics';
@@ -23,6 +25,38 @@ export default function LoginScreen() {
     });
   }, []));
 
+  // Check URL params for invite credentials and auto-register
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const invUser = params.get('u');
+      const invPass = params.get('p');
+      const invName = params.get('n');
+      if (invUser && invPass) {
+        setUsername(invUser);
+        setPassword(invPass);
+        // Auto-create account from invite link
+        (async () => {
+          await seedAdminAccount();
+          const users = await getAllUsers();
+          const exists = users.find((u) => u.username.toLowerCase() === invUser.toLowerCase());
+          if (!exists) {
+            const newUser: AppUser = {
+              id: uuid.v4() as string,
+              username: invUser.toLowerCase(),
+              password: invPass,
+              displayName: invName || invUser,
+              role: 'user',
+              canInvite: false,
+              createdAt: new Date().toISOString(),
+            };
+            await createUser(newUser);
+          }
+        })();
+      }
+    }
+  }, []);
+
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert('Missing fields', 'Enter your username and password.');
@@ -30,6 +64,23 @@ export default function LoginScreen() {
     }
     setLoading(true);
     await seedAdminAccount();
+
+    // If user doesn't exist locally, create them (they came from an invite on another device)
+    const users = await getAllUsers();
+    const existingUser = users.find((u) => u.username.toLowerCase() === username.trim().toLowerCase());
+    if (!existingUser) {
+      const newUser: AppUser = {
+        id: uuid.v4() as string,
+        username: username.trim().toLowerCase(),
+        password: password.trim(),
+        displayName: username.trim(),
+        role: 'user',
+        canInvite: false,
+        createdAt: new Date().toISOString(),
+      };
+      await createUser(newUser);
+    }
+
     const user = await login(username.trim(), password.trim());
     setLoading(false);
 
