@@ -79,7 +79,13 @@ export default function ScoreRoundScreen() {
 
       await saveLiveRound(round);
       trackEvent('round_started', { format: format, mode: mode });
-      router.push(`/score-live?id=${roundId}`);
+
+      // Use direct window.location on web since router.push fails for hidden tab screens
+      if (typeof window !== 'undefined' && window.location) {
+        window.location.href = `/score-live?id=${roundId}`;
+      } else {
+        router.push(`/score-live?id=${roundId}`);
+      }
     } catch (e: any) {
       Alert.alert('Error', e?.message || 'Failed to start round. Please try again.');
     }
