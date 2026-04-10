@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, useWindowDimensions } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,20 +26,25 @@ export default function Dashboard() {
   const [hiddenCards, setHiddenCards] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   // Auth gate + onboarding check
   useFocusEffect(useCallback(() => {
     (async () => {
       const u = await getCurrentUser();
       if (!u) {
-        router.replace('/login');
+        setNeedsLogin(true);
+        setAuthChecked(true);
         return;
       }
       setCurrentUser(u);
+      setNeedsLogin(false);
       const onboarded = await getOnboardingComplete();
       if (!onboarded) {
-        router.replace('/onboarding');
-        return;
+        setNeedsOnboarding(true);
+      } else {
+        setNeedsOnboarding(false);
       }
       setAuthChecked(true);
     })();
@@ -90,7 +95,53 @@ export default function Dashboard() {
   const recentShots = shots.slice(0, 5);
 
   if (!authChecked) {
-    return <View style={styles.container}><DashboardSkeleton /></View>;
+    return <ScrollView style={styles.container}><DashboardSkeleton /></ScrollView>;
+  }
+
+  // Show login prompt inline instead of redirecting
+  if (needsLogin) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={[styles.content, { justifyContent: 'center', flex: 1 }]}>
+        <AnimatedEntry>
+          <LinearGradient colors={[...gradients.heroBg] as [string, string, ...string[]]} style={styles.hero}>
+            <Text style={styles.brand}>BCA</Text>
+            <Text style={styles.subtitle}>ARCHERY OS</Text>
+          </LinearGradient>
+        </AnimatedEntry>
+        <TouchableOpacity style={{ marginTop: spacing.lg, borderRadius: borderRadius.md, overflow: 'hidden' }}
+          onPress={() => router.push('/login')}>
+          <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, padding: spacing.md }}>
+            <Ionicons name="log-in" size={20} color={colors.background} />
+            <Text style={{ fontSize: fontSize.md, fontWeight: '800', color: colors.background, letterSpacing: 2 }}>LOG IN</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
+
+  // Show onboarding prompt
+  if (needsOnboarding) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={[styles.content, { justifyContent: 'center', flex: 1 }]}>
+        <AnimatedEntry>
+          <LinearGradient colors={[...gradients.heroBg] as [string, string, ...string[]]} style={styles.hero}>
+            <Text style={styles.brand}>BCA</Text>
+            <Text style={styles.subtitle}>ARCHERY OS</Text>
+          </LinearGradient>
+        </AnimatedEntry>
+        <TouchableOpacity style={{ marginTop: spacing.lg, borderRadius: borderRadius.md, overflow: 'hidden' }}
+          onPress={() => router.push('/onboarding')}>
+          <LinearGradient colors={[...gradients.primaryToSecondary] as [string, string]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, padding: spacing.md }}>
+            <Ionicons name="arrow-forward" size={20} color={colors.background} />
+            <Text style={{ fontSize: fontSize.md, fontWeight: '800', color: colors.background, letterSpacing: 2 }}>GET STARTED</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </ScrollView>
+    );
   }
 
   return (
